@@ -10,11 +10,11 @@ function Renderer(appTitle, rootTemplate, contextName, context){
 }
 
 Renderer.prototype.renderAsRoot = function (templateName, pageContext) {
-    return this._render(false, templateName, pageContext)
+    return this._render(false, templateName, pageContext);
 };
 
 Renderer.prototype.render = function (templateName, pageContext) {
-    return this._render(true, templateName, pageContext)
+    return this._render(true, templateName, pageContext);
 };
 
 Renderer.prototype._render = function (inheritFromRoot, templateName, pageContext){

@@ -8,64 +8,74 @@ var headerfooter = require('gulp-headerfooter');
 var minimist = require('minimist');
 
 var knownOptions = {
-  string: 'use',
-  default: { use: 'ALL' }
+    string: ['ex', 'app'],
+    boolean: true,
+    default: {ex: 'sheet', app: null}
 };
 
 var options = minimist(process.argv.slice(2), knownOptions);
 
 const srcHeader = 'src/header';
-const srcExternal = 'external-src';
+const srcExternal = 'vendor-src';
 const srcLib = 'src/lib';
-const srcApp = 'src/app';
+const exampleAppSrcBase = 'example-apps';
 
 
-function mapIt(externalFilter, libFilter, appFilter){
+function mapIt(externalFilter, libFilter, appFilter, srcApp) {
     return [srcHeader + '/**/*.js'].concat(
-        externalFilter.map((val)=>{
+        externalFilter.map((val)=> {
             return (srcExternal + '/**/##.js').replace('##', val);
         }),
-        libFilter.map((val)=>{
+        libFilter.map((val)=> {
             return (srcLib + '/**/##.js').replace('##', val);
-        }), 
-        appFilter.map((val)=>{
+        }),
+        appFilter.map((val)=> {
             return (srcApp + '/**/##.js').replace('##', val);
         })
     );
 }
 
 
-const customBuilds = {
-    ALL:  mapIt(['*'], ['*'], ['*']),
-    sheet: mapIt([], ['1.*', '2.*', '10.*'], ['*']),
-    oauth: mapIt(['*'], ['1.*', '2.*'], ['*'])
-};
+// const exampleAppBuilds = {
+//     ALL: mapIt(['*'], ['*'], ['*']),
+//     sheet: mapIt([], ['1.*', '2.*', '10.*'], ['*']),
+//     oauth: mapIt(['*'], ['1.*', '2.*'], ['*'])
+// };
+
+var appPath = null;
+if (options.app) {
+    appPath = options.app;
+}else {
+    appPath = exampleAppSrcBase + options.ex;
+}
+
+var mods = require(appPath + '/config').modules;
+var src = mapIt(mods.external, mods.library, mods.app, appPath + '/app');
 
 
 gulp.task('build', () => {
-    var src = customBuilds[options.use];
-    
+
     console.log(src);
-    
+
     var filtWrapper = gulpFilter(['*src/lib/**/*', '!*src/lib/**/*.0.*'], {restore: true});
-    
+
     return gulp.src(src)
         .pipe(cached('build'))        // only pass through changed files
         //.pipe(jshint())                 // do special things to the changed files...
         .pipe(filtWrapper)  //skip making a wrapper for Defs - they should be global
-        
+
         .pipe(headerfooter(
             '//**************************************************************************************************************************\n' +
             '(function () {\n' +
-            '//**************************************************************************************************************************\n\n', 
+            '//**************************************************************************************************************************\n\n',
             '\n})();\n\n')
-        ) 
-        
+        )
+
         .pipe(filtWrapper.restore)
-        
+
         .pipe(remember('build'))      // add back all files to the stream
         .pipe(concat('library.js'))         // do things that require all files
-        .pipe(gulp.dest('build'));
+        .pipe(gulp.dest(appPath + '/build'));
 });
 
 gulp.task('watch', () => {
