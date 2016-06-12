@@ -1,0 +1,35 @@
+{
+  "name": "apps-script-starter-kit",
+  "version": "0.1.0",
+  "description": "Starter kit and modular Library for Google (R) Apps Script (TM)",
+  "main": "_script_alex.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UIHeaven/apps-script-starter-kit.git"
+  },
+  "keywords": [
+    "apps",
+    "script",
+    "library"
+  ],
+  "author": "Denis Volokhovskiy <den@sketchof.me>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/UIHeaven/apps-script-lib/issues"
+  },
+  "homepage": "https://github.com/UIHeaven/apps-script-lib#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-cached": "^1.1.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-filter": "^4.0.0",
+    "gulp-headerfooter": "^1.0.3",
+    "gulp-jshint": "^2.0.1",
+    "gulp-remember": "^0.3.1",
+    "jshint": "^2.9.2",
+    "minimist": "^1.2.0"
+  }
+}

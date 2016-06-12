@@ -1,0 +1,133 @@
+Lib.util.stub = function() {return null;};
+
+Lib.util.uuid = function(){
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+        return v.toString(16);
+    });
+};
+
+Lib.util.isArray = function(obj) {
+    return Object.prototype.toString.call(obj) === '[object Array]';
+};
+
+Lib.util.isObject = function(obj) {
+    return Object.prototype.toString.call(obj) === '[object Object]';
+};
+
+Lib.util.escapeRegExp = function(str) {
+       return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+};
+
+Lib.util.makeRegex = function(pre, text, post) {
+    return new RegExp(pre + escapeRegExp(text) + post);
+};
+
+Lib.util.log = function(msg, data) {
+    if (data) {
+        Logger.log("\n\n" + msg + " ===> " + JSON.stringify(data) + "\n\n");
+    }else{
+        Logger.log("\n\n" + msg + "\n\n");
+    }
+};
+
+Lib.util.trace = function(err) {
+    var errInfo = "\n";
+    for (var prop in err) {
+        errInfo += prop + ": " + err[prop] + "\n";
+    }
+    return errInfo;
+};
+
+/**
+ * Extends or overwrites
+ * @returns {*|{}}
+ */
+Lib.util.extend = function() {
+    var destination = arguments[0] || {};
+    for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i];
+        if (source) {
+            for (var property in source) {
+                if (source.hasOwnProperty(property)) {
+                    destination[property] = source[property];
+                }
+            }
+        }
+    }
+    return destination;
+};
+
+
+Lib.util.columnToLetter = function(column) {
+    if (typeof column === "string") return column;
+    
+    var temp, letter = '';
+    while (column > 0) {
+        temp = (column - 1) % 26;
+        letter = String.fromCharCode(temp + 65) + letter;
+        column = (column - temp - 1) / 26;
+    }
+    return letter;
+};
+
+Lib.util.letterToColumn = function(letter) {
+    var num = parseInt(letter);
+    if (! isNaN(num)) return num;
+    
+    var column = 0, length = letter.length;
+    for (var i = 0; i < length; i++) {
+        column += (letter.charCodeAt(i) - 64) * Math.pow(26, length - i - 1);
+    }
+    return column;
+};
+
+Lib.util.appendRows = function appendRows(sheet, dataOrRowsNumber, optStartColumn, columnNameToScanForEndORstartRow) {
+    var o = {};
+    var max_rows = sheet.getMaxRows();
+    var last_row = 1;
+    if (typeof columnNameToScanForEndORstartRow !== UNDEF) {
+        if (typeof columnNameToScanForEndORstartRow === 'string') { //column name
+            var values = sheet.getRange(columnNameToScanForEndORstartRow + '1:' + columnNameToScanForEndORstartRow).getValues();
+            for (var r = values.length - 1; r >= 0; r--) {
+                if (values[r][0]) {
+                    last_row = r + 1;
+                    break;
+                }
+            }
+        } else { //should be a number
+            last_row = columnNameToScanForEndORstartRow;
+        }
+    } else {
+        last_row = sheet.getLastRow();
+    }
+
+    var appendOnly = typeof dataOrRowsNumber === 'number';
+
+    var l = appendOnly ? dataOrRowsNumber : dataOrRowsNumber.length;
+
+    if (max_rows - last_row < l) {
+        sheet.insertRowsAfter(max_rows, l - (max_rows - last_row) + 1);
+        o.inserted = true;
+    }
+
+    if (!appendOnly) {
+        var range = sheet.getRange(last_row + 1, optStartColumn || 1, dataOrRowsNumber.length, dataOrRowsNumber[0].length); //data should be normalized - all columns with the same size
+        range.setValues(dataOrRowsNumber);
+    }
+
+    return o;
+};
+
+
+
+Lib.util.getColumn = function(values, numberOrLetter, from){
+    var index = Lib.util.letterToColumn(numberOrLetter) - 1;
+    var res = [];
+    for (var i = (from || 0); i < values.length; i++) {
+        res.push(values[i][index]);
+    }
+    return res;
+};
+
+//====================================================================================================================================================
