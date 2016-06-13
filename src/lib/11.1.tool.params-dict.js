@@ -29,7 +29,7 @@ ParamsDict.prototype.get = function (values, offsets) {
     var data = {};
     for (var fieldName in t.fields) {
         var val = t.fields[fieldName];
-        if (isArray(val)){
+        if (Lib.util.isArray(val)){
             var results = [];
             for (var i=0; i<val.length; i++) {
                 results.push(t._getField(fieldName, val[i], values, offsets));

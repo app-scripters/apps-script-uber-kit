@@ -18,9 +18,14 @@ SSPool.prototype._get = function (ssId, sheetName, createSheetIfMissing, rangeNa
     t.error = null;
     var ss;
     if (! (ssId in t._ssSet)){
-        ss = SpreadsheetApp.openById(ssId);
+        if (ssId === ''){
+            ss = SpreadsheetApp.getActiveSpreadsheet();
+            ssId = ss.getId();
+        }else {
+            ss = SpreadsheetApp.openById(ssId);
+        }
         if (! ss) {
-            t.error = "Wrong Spreadsheet ID: " + ssId;
+            t.error = "Wrong Spreadsheet ID: " + ssId + ", use '' to get active SS";
             return null;
         }
         

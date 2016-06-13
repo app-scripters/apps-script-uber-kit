@@ -18,7 +18,7 @@ ColumnManager.prototype._mapNames = function () {
 ColumnManager.prototype.getColumn = function (name) {
     var t = this;
     if (name[0] !== '*') {  //this is a column letter
-        return letterToColumn(name);
+        return Lib.util.letterToColumn(name);
     } else {
         return t._names[name];
     }

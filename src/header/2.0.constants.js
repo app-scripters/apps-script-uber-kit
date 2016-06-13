@@ -1,16 +1,12 @@
 //CONSTANTS needs to be available where spreadsheet is not accessible (yet)
 //cannot be moved to sheet-based parameters
 CONSTANTS = {
-    //======================================================================================
-    //--------------------------------- Obligatory  CHANGE ---------------------------------
-    //======================================================================================
     
-    ADMIN_SPREADSHEET_ID: "your id here",
+    ADMIN_SPREADSHEET_ID: "",  //empty string means to get active Spreadsheet, good for bounded scripts
     
-    //======================================================================================
-    //------------------------------------- end  --------------------------------------------
-    //======================================================================================
-    PARAMETERS_SHEET_NAME: 'PARAMS',
+    PARAMETERS_SHEET_NAME: 'SCRIPT_PARAMS',
+
+    //========================== Rather internal parameters below =======================================
     //Indexes below counting from 1
     PARAM_NAME_POSITION: 1,
     PARAM_TYPE_POSITION: 2,

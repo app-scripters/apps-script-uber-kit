@@ -17,7 +17,7 @@ function Configurator(ssPoolOrData, options, isClientSide){
         'date': function(val){return new Date(val);},
         'list': function(val, splitter){
             return val.toString()
-                .split(makeRegex('\\s*', splitter, '\\s*'));
+                .split(Lib.util.makeRegex('\\s*', splitter, '\\s*'));
         },
         'array': function(val, terminator, row){
             return row.slice(0, row.indexOf(terminator || ""));
@@ -39,7 +39,7 @@ Configurator.prototype.get = function () {
         if (t._isClient){
             values = t._data;
         }else{
-            res = t._ssPool.get(t._opt.PARAMS_SPREADSHEET_ID, t._opt.PARAMETERS_SHEET_NAME);
+            res = t._ssPool.get(t._opt.ADMIN_SPREADSHEET_ID, t._opt.PARAMETERS_SHEET_NAME);
             values = res.sheet.getDataRange().getValues();
         }
         var params = {};
