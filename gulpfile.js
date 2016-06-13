@@ -18,7 +18,7 @@ var options = minimist(process.argv.slice(2), knownOptions);
 const srcHeader = 'src/header';
 const srcExternal = 'vendor-src';
 const srcLib = 'src/lib';
-const exampleAppSrcBase = 'example-apps';
+const exampleAppSrcBase = './example-apps';
 
 
 function mapIt(externalFilter, libFilter, appFilter, srcApp) {
@@ -46,7 +46,7 @@ var appPath = null;
 if (options.app) {
     appPath = options.app;
 }else {
-    appPath = exampleAppSrcBase + options.ex;
+    appPath = exampleAppSrcBase + '/' + options.ex;
 }
 
 var mods = require(appPath + '/config').modules;
@@ -74,7 +74,7 @@ gulp.task('build', () => {
         .pipe(filtWrapper.restore)
 
         .pipe(remember('build'))      // add back all files to the stream
-        .pipe(concat('2-app.js'))         // do things that require all files
+        .pipe(concat('bundle.js'))         // do things that require all files
         .pipe(gulp.dest(appPath + '/build'));
 });
 
