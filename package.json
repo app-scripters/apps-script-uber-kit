@@ -1,8 +1,7 @@
 {
-  "name": "apps-script-starter-kit",
+  "name": "apps-script-uber-kit",
   "version": "0.1.0",
   "description": "Starter kit and modular Library for Google (R) Apps Script (TM)",
-  "main": "_script_alex.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -18,9 +17,9 @@
   "author": "Denis Volokhovskiy <den@sketchof.me>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/UIHeaven/apps-script-lib/issues"
+    "url": "https://github.com/UIHeaven/apps-script-uber-kit/issues"
   },
-  "homepage": "https://github.com/UIHeaven/apps-script-lib#readme",
+  "homepage": "https://github.com/UIHeaven/apps-script-uber-kit#readme",
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-cached": "^1.1.0",

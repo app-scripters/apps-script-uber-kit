@@ -74,7 +74,7 @@ gulp.task('build', () => {
         .pipe(filtWrapper.restore)
 
         .pipe(remember('build'))      // add back all files to the stream
-        .pipe(concat('app.js'))         // do things that require all files
+        .pipe(concat('2-app.js'))         // do things that require all files
         .pipe(gulp.dest(appPath + '/build'));
 });
 

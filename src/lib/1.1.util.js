@@ -1,37 +1,50 @@
-Lib.util.stub = function() {return null;};
+Lib.util.stub = function () {
+    return null;
+};
 
-Lib.util.uuid = function(){
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+Lib.util.uuid = function () {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
     });
 };
 
-Lib.util.isArray = function(obj) {
+Lib.util.isArray = function (obj) {
     return Object.prototype.toString.call(obj) === '[object Array]';
 };
 
-Lib.util.isObject = function(obj) {
+Lib.util.isObject = function (obj) {
     return Object.prototype.toString.call(obj) === '[object Object]';
 };
 
-Lib.util.escapeRegExp = function(str) {
-       return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+Lib.util.escapeRegExp = function (str) {
+    return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 };
 
-Lib.util.makeRegex = function(pre, text, post) {
+Lib.util.makeRegex = function (pre, text, post) {
     return new RegExp(pre + escapeRegExp(text) + post);
 };
 
-Lib.util.log = function(msg, data) {
+Lib.util.makeUrlParams = function (obj) {
+    if (! obj) return '';
+    var str = [];
+    for (var p in obj) {
+        if (obj.hasOwnProperty(p)) {
+            str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+        }
+    }
+    return str.length ? ('?' + str.join("&")) : '';
+};
+
+Lib.util.log = function (msg, data) {
     if (data) {
         Logger.log("\n\n" + msg + " ===> " + JSON.stringify(data) + "\n\n");
-    }else{
+    } else {
         Logger.log("\n\n" + msg + "\n\n");
     }
 };
 
-Lib.util.trace = function(err) {
+Lib.util.trace = function (err) {
     var errInfo = "\n";
     for (var prop in err) {
         errInfo += prop + ": " + err[prop] + "\n";
@@ -43,7 +56,7 @@ Lib.util.trace = function(err) {
  * Extends or overwrites
  * @returns {*|{}}
  */
-Lib.util.extend = function() {
+Lib.util.extend = function () {
     var destination = arguments[0] || {};
     for (var i = 1; i < arguments.length; i++) {
         var source = arguments[i];
@@ -59,9 +72,9 @@ Lib.util.extend = function() {
 };
 
 
-Lib.util.columnToLetter = function(column) {
+Lib.util.columnToLetter = function (column) {
     if (typeof column === "string") return column;
-    
+
     var temp, letter = '';
     while (column > 0) {
         temp = (column - 1) % 26;
@@ -71,10 +84,10 @@ Lib.util.columnToLetter = function(column) {
     return letter;
 };
 
-Lib.util.letterToColumn = function(letter) {
+Lib.util.letterToColumn = function (letter) {
     var num = parseInt(letter);
-    if (! isNaN(num)) return num;
-    
+    if (!isNaN(num)) return num;
+
     var column = 0, length = letter.length;
     for (var i = 0; i < length; i++) {
         column += (letter.charCodeAt(i) - 64) * Math.pow(26, length - i - 1);
@@ -120,8 +133,7 @@ Lib.util.appendRows = function appendRows(sheet, dataOrRowsNumber, optStartColum
 };
 
 
-
-Lib.util.getColumn = function(values, numberOrLetter, from){
+Lib.util.getColumn = function (values, numberOrLetter, from) {
     var index = Lib.util.letterToColumn(numberOrLetter) - 1;
     var res = [];
     for (var i = (from || 0); i < values.length; i++) {

@@ -1,6 +1,10 @@
-# apps-script-starter-kit
-Starter kit and modular Library for Google (R) Apps Script (TM)
+# apps-script-uber-kit
+Complex modular library and build tool kit for Google (R) Apps Script (TM)
+all kind of scripts
 
+##Features
+- Framework for Web published scripts
+- automatic concatenation in proper order into a single file
 - recognizes app project structure with configuration folder, see below
 - Builds modular library and external dependencies (vendor-src) for particular app according to 'config.js'
 - places build into corresponding app folder /build subfolder
