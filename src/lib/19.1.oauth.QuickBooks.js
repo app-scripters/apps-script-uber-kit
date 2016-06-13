@@ -30,7 +30,6 @@ QB.prototype._checkAuth = function () {
     if (! t._service.hasAccess()) {
         //if not authorised, then call the handler to create a user-facing auth URL
         t.userOnDenied(t._service.authorize());
-        throw new Error('AUTH'); //and signal to interrupt current call processing
     }
     //else just proceed with the call to API via OAuth    
 };
@@ -38,8 +37,6 @@ QB.prototype._checkAuth = function () {
 QB.prototype.fetch = function(method, entity, idOrNull, params, payload) {
     var t = this;
     
-    t._checkAuth();
-
     var companyId = t._data.companyId;
 
     var url = 'https://quickbooks.api.intuit.com/v3/company/' +
@@ -57,6 +54,10 @@ QB.prototype.fetch = function(method, entity, idOrNull, params, payload) {
     }
     
     var response = t._service.fetch(url + Lib.util.makeUrlParams(params), opts);
+    if (response.getResponseCode() != 200){
+        t._checkAuth();
+        return null;
+    }
     return JSON.parse(response.getContentText());
 
 };
