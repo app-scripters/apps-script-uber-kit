@@ -6,11 +6,14 @@
 function QB(credentials, onResumeAccess, onDenied){
     var t = this;
     t._creds = credentials;
-    service.currentUserCallbackProvider = function(request){return t._authCallback(request)};
+    service.currentUserCallbackProvider = function(request){
+        return t._authCallback(request)
+    };
     t.userOnDenied = onDenied;
     t.userOnAccess = onResumeAccess;
     t._service = t._getService();
     t._refreshData();
+    t._checkAuth();
 }
 
 
@@ -39,7 +42,7 @@ QB.prototype.fetch = function(method, entity, idOrNull, params, payload) {
 
     var companyId = t._data.companyId;
 
-    var url = 'https://sandbox-quickbooks.api.intuit.com/v3/company/' +
+    var url = 'https://quickbooks.api.intuit.com/v3/company/' +
         companyId + '/' + entity +
         (idOrNull == null ? '' : ('/' + (idOrNull === '' ? companyId : idOrNull)));
     var opts = {
@@ -63,7 +66,7 @@ QB.prototype.create = function(entity, json) {
 };
 
 QB.prototype.query = function(query) {
-    return this.fetch('get', 'query', null, {query: query});
+    return this.fetch('get', 'query', null, {query: query}).QueryResponse;
 };
 
 QB.prototype.read = function(entity, id) {
@@ -102,6 +105,10 @@ QB.prototype._getService = function() {
         .setPropertyStore(PropertiesService.getUserProperties());
 };
 
+
+QB.prototype.reset = function() {
+    this._getService().reset();
+};
 
 QB.prototype._authCallback = function(request) {
     var t = this;

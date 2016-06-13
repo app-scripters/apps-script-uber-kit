@@ -9,6 +9,8 @@ all kind of scripts
 - Builds modular library and external dependencies (vendor-src) for particular app according to 'config.js'
 - places build into corresponding app folder /build subfolder
 
+- Unix environment only is supported for now
+
 ## Important notes
 
 - Library and App modules are prefixed with x.x. - this figures are used for optional inclusion of modules
@@ -40,11 +42,27 @@ module.exports = {
 
 ##Usage
 
+Set $APPS-SCRIPT-UBER-KIT variable in your ~/.bashrc
+to this repository root
+
 ### To build an example app (from this repository)
 
-gulp build --ex=appname
+- Go to example-apps folder
+- run: 
 
+```
+    build.sh appname
+```
 
 ### To build your app (from this repository)
 
-gulp build --app=/path/to/app-root-folder
+- Make a copy of example-apps folder (named e.g. working-root) with at least one app inside and build.sh script
+- name your app(s) (e.g. yourapp)
+- Modify code in working-root/yourapp/app section
+- adjust working-root/yourapp/config.js to the modules you want
+- run this inside the new working-root:
+
+```
+    build.sh yourapp
+```
+

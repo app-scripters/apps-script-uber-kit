@@ -6,11 +6,14 @@ var remember = require('gulp-remember');
 const gulpFilter = require('gulp-filter');
 var headerfooter = require('gulp-headerfooter');
 var minimist = require('minimist');
+const chmod = require('gulp-chmod');
+
+const defaultExampleApp = 'sheet';
 
 var knownOptions = {
-    string: ['ex', 'app'],
+    string: ['app'],
     boolean: true,
-    default: {ex: 'sheet', app: null}
+    default: {app: null}
 };
 
 var options = minimist(process.argv.slice(2), knownOptions);
@@ -18,7 +21,7 @@ var options = minimist(process.argv.slice(2), knownOptions);
 const srcHeader = 'src/header';
 const srcExternal = 'vendor-src';
 const srcLib = 'src/lib';
-const exampleAppSrcBase = './example-apps';
+const exampleAppSrcBase = './example-apps/src';
 
 
 function mapIt(externalFilter, libFilter, appFilter, srcApp) {
@@ -36,17 +39,11 @@ function mapIt(externalFilter, libFilter, appFilter, srcApp) {
 }
 
 
-// const exampleAppBuilds = {
-//     ALL: mapIt(['*'], ['*'], ['*']),
-//     sheet: mapIt([], ['1.*', '2.*', '10.*'], ['*']),
-//     oauth: mapIt(['*'], ['1.*', '2.*'], ['*'])
-// };
-
 var appPath = null;
 if (options.app) {
     appPath = options.app;
 }else {
-    appPath = exampleAppSrcBase + '/' + options.ex;
+    appPath = exampleAppSrcBase + '/' + defaultExampleApp;
 }
 
 var mods = require(appPath + '/config').modules;
@@ -75,7 +72,18 @@ gulp.task('build', () => {
 
         .pipe(remember('build'))      // add back all files to the stream
         .pipe(concat('bundle.js'))         // do things that require all files
-        .pipe(gulp.dest(appPath + '/build'));
+        .pipe(gulp.dest(appPath + '/build'))
+        // .pipe(chmod({
+        // 			owner: {
+        // 				write: false,
+        // 			},
+        // 			group: {
+        //                 write: false,
+        // 			},
+        // 			others: {
+        //                 write: false,
+        // 			}
+        // 		}));
 });
 
 gulp.task('watch', () => {
