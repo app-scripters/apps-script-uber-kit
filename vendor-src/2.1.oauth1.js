@@ -1050,3 +1050,8 @@ function isEmpty_(value) {
 function getTimeInSeconds_(date) {
     return Math.floor(date.getTime() / 1000);
 }
+
+Vendor.OAuth1 = {
+    createService: createService,
+    MemoryProperties: MemoryProperties
+};

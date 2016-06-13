@@ -38,10 +38,6 @@ Lib.util.lookup = function(pattern, rangeValuesForSearch, searchAll){
     return results.length > 0 ? results : -1;
 };
 
-Lib.util.multiLookup._getColumn = function(letter){
-    return this.record[Lib.util.letterToColumn(letter)];
-};
-
 Lib.util.multiLookup = function(patterns, columnsForPatternsToSearchOver, wholeDataRangeValues, searchAll){
     var results = [];
     var patternsMatchNumbers = {};
@@ -80,5 +76,9 @@ Lib.util.multiLookup = function(patterns, columnsForPatternsToSearchOver, wholeD
         }
     }
     return results.length > 0 ? results : -1;
+};
+
+Lib.util.multiLookup._getColumn = function(letter){
+    return this.record[Lib.util.letterToColumn(letter)];
 };
 

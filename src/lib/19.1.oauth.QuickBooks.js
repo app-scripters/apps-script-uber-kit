@@ -78,7 +78,7 @@ QB.prototype.update = function(entity, json) {
     return this.fetch('post', entity, null, {operation: "update"}, json);
 };
 
-QB.prototype.delete = function(entity, id) {
+QB.prototype.remove = function(entity, id) {
     return this.fetch('post', entity, null, {operation: "delete"}, {
         "Id": String(id),
         "SyncToken": "0"
@@ -88,7 +88,7 @@ QB.prototype.delete = function(entity, id) {
 
 QB.prototype._getService = function() {
     var t = this;
-    return OAuth1.createService('QuickBooks')
+    return Vendor.OAuth1.createService('QuickBooks')
     // Set the endpoint URLs.
         .setAccessTokenUrl('https://oauth.intuit.com/oauth/v1/get_access_token')
         .setRequestTokenUrl('https://oauth.intuit.com/oauth/v1/get_request_token')
