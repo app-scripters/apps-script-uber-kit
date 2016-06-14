@@ -381,6 +381,7 @@ Service_.prototype.getRequestToken_ = function () {
 
     var token = this.parseToken_(response.getContentText());
     token.type = 'request';
+    Logger.log("RT: " + JSON.stringify(token));
     return token;
 };
 
@@ -414,6 +415,7 @@ Service_.prototype.getAccessToken_ = function (opt_verifier) {
 
     var token = this.parseToken_(response.getContentText());
     token.type = 'access';
+    Logger.log("AT: " + JSON.stringify(token));
     return token;
 };
 

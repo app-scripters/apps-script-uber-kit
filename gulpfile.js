@@ -21,27 +21,19 @@ var options = minimist(process.argv.slice(2), knownOptions);
 
 const srcExternal = 'vendor-src';
 const srcLib = 'lib-src';
+const srcLibPostfix = 'lib-postfix-src';
 const exampleAppSrcBase = './example-apps/src';
 
 
-function mapVendor(externalFilter) {
-    return externalFilter.map((val)=> {
-            return (srcExternal + '/**/##.js').replace('##', val);
-        });
+function constructSources(aFilter, srcArr) {
+    var acc = [];
+    for (var i in srcArr) {
+        acc = acc.concat(aFilter.map((val)=> {
+            return (srcArr[i] + '/**/##.js').replace('##', val);
+        }));
+    }
+    return acc;
 }
-
-function mapLib(libFilter) {
-    return libFilter.map((val)=> {
-            return (srcLib + '/**/##.js').replace('##', val);
-        });
-}
-
-function mapApp(appFilter, srcApp) {
-    return appFilter.map((val)=> {
-            return (srcApp + '/**/##.js').replace('##', val);
-        });
-}
-
 
 var appPath = null;
 if (options.app) {
@@ -51,9 +43,10 @@ if (options.app) {
 }
 
 var mods = require(appPath + '/config').modules;
-var vendorFiles = mapVendor(mods.external);
-var libFiles = mapLib(mods.library);
-var appFiles = mapApp(mods.app, appPath + '/app');
+
+var vendorFiles = constructSources(mods.external, [srcExternal]);
+var libFiles = constructSources(mods.library, [srcLib]);
+var appFiles = constructSources(mods.app, [appPath + '/app', srcLibPostfix]);
 
 function _build(src, what){
     var filtWrapper = gulpFilter(['**', '!**/*.0.*.js'], {restore: true});
@@ -82,7 +75,7 @@ gulp.task('build', () => {
 
     console.log('Vendor Files:--------------\n', vendorFiles);
     console.log('Library Files:--------------\n', libFiles);
-    console.log('App Files:--------------\n', appFiles);
+    console.log('App Files + Postfix:--------------\n', appFiles);
 
     var vendor = _build(vendorFiles, 'vendor')
         .pipe(concat('1-vendor.js'))         // do things that require all files
