@@ -2,6 +2,10 @@
 Complex modular library and build tool kit for Google (R) Apps Script (TM)
 all kind of scripts
 
+**WARNING: while completely usable, 
+project is in Alpha stage at the moment and is seen rapid potentially incompatible changes.
+Watch this notice removal.**
+
 ##Features
 - Framework for Web published scripts
 - automatic concatenation in proper order into a single file

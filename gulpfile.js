@@ -51,8 +51,8 @@ if (options.app) {
 }
 
 var mods = require(appPath + '/config').modules;
-var vendorFiles = mapVendor(mods.external, mods.library);
-var libFiles = mapLib(mods.external, mods.library);
+var vendorFiles = mapVendor(mods.external);
+var libFiles = mapLib(mods.library);
 var appFiles = mapApp(mods.app, appPath + '/app');
 
 function _build(src, what){
@@ -80,8 +80,9 @@ function _build(src, what){
 
 gulp.task('build', () => {
 
-    console.log('libFiles:--------------\n', libFiles);
-    console.log('appFiles:--------------\n', appFiles);
+    console.log('Vendor Files:--------------\n', vendorFiles);
+    console.log('Library Files:--------------\n', libFiles);
+    console.log('App Files:--------------\n', appFiles);
 
     var vendor = _build(vendorFiles, 'vendor')
         .pipe(concat('1-vendor.js'))         // do things that require all files

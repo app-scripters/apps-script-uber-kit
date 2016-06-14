@@ -7,13 +7,12 @@ function QB(credentials, onResumeAccess, onDenied){
     var t = this;
     t._creds = credentials;
     service.currentUserCallbackProvider = function(request){
-        return t._authCallback(request)
+        return t._authCallback(request);
     };
     t.userOnDenied = onDenied;
     t.userOnAccess = onResumeAccess;
     t._service = t._getService();
     t._refreshData();
-    t._checkAuth();
 }
 
 
@@ -30,12 +29,15 @@ QB.prototype._checkAuth = function () {
     if (! t._service.hasAccess()) {
         //if not authorised, then call the handler to create a user-facing auth URL
         t.userOnDenied(t._service.authorize());
+        return false;
     }
+    return true;
     //else just proceed with the call to API via OAuth    
 };
 
 QB.prototype.fetch = function(method, entity, idOrNull, params, payload) {
     var t = this;
+    if (t._blockFetch) return null;
     
     var companyId = t._data.companyId;
 
@@ -53,8 +55,12 @@ QB.prototype.fetch = function(method, entity, idOrNull, params, payload) {
         opts.contentType = 'application/json';
     }
     
-    var response = t._service.fetch(url + Lib.util.makeUrlParams(params), opts);
-    if (response.getResponseCode() != 200){
+    var response = false;
+    try {
+        response = t._service.fetch(url + Lib.util.makeUrlParams(params), opts);
+    }catch (e){
+    }
+    if (response === false || response.getResponseCode() != 200){
         t._checkAuth();
         return null;
     }
@@ -67,7 +73,8 @@ QB.prototype.create = function(entity, json) {
 };
 
 QB.prototype.query = function(query) {
-    return this.fetch('get', 'query', null, {query: query}).QueryResponse;
+    var response = this.fetch('get', 'query', null, {query: query});
+    return response ? response.QueryResponse : null;
 };
 
 QB.prototype.read = function(entity, id) {
@@ -94,6 +101,7 @@ QB.prototype._getService = function() {
         .setRequestTokenUrl('https://oauth.intuit.com/oauth/v1/get_request_token')
         .setAuthorizationUrl('https://appcenter.intuit.com/Connect/Begin')
 
+        .setParamLocation('uri-query')
         // Set the consumer key and secret.
         .setConsumerKey(t._creds.consumerKey)
         .setConsumerSecret(t._creds.consumerSecret)
@@ -120,8 +128,10 @@ QB.prototype._authCallback = function(request) {
             .setProperty('QuickBooks.companyId', request.parameter.realmId);
         t._refreshData();
         t.userOnAccess();
+        return HtmlService.createHtmlOutput('OAuth Success!');
     }else{
         t.userOnDenied(t._service.authorize());
+        return HtmlService.createHtmlOutput('OAuth: Access DENIED!');
     }
 };
 
