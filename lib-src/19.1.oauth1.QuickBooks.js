@@ -3,15 +3,16 @@
  * sandbox company.
  */
 
-var AUTH = {
-    NO: -1,
-    INRPOGRESS: 0,
-    YES: 1
-};
-
 function QB(options){
     var t = this;
-    t._name = 'QuickBooks';
+    //check if this is really object construction
+    if (! t.serviceName) {
+        throw new Error("you've forgotten 'new' keyword: var instance = new " + t.serviceName + "(...)");
+    }
+
+    t._props = PropertiesService.getUserProperties();
+    t._isAuthCallback = options._isAuthCallback;
+    
     t._creds = {
         consumerKey: options.consumerKey, 
         consumerSecret: options.consumerSecret
@@ -25,42 +26,50 @@ function QB(options){
     t._service = t._getService();
     t._data = {};
     
-    //tracks Authorization process state. If in progress
-    //prevents from calling authorize() twice
-    t._auth = AUTH.NO;
+    //tracks Authorization process state.
+    //we should NOT initiate authorization here in the constructor, 
+    //because the same constructor
+    //will be called in OAuth callback below, and request token will change otherwise
+    t._auth = t._checkAuth();
     
-    if (t._checkAuth() === AUTH.YES) {
+    if (t._auth) {
         t._refreshData();
     }
 }
 
+QB.prototype.serviceName = 'QuickBooks';
+
 QB.prototype._refreshData = function () {
     var t = this;
     t._data.companyId =  
-        PropertiesService.getUserProperties().getProperty('QuickBooks.companyId');
+        t._props.getProperty('QuickBooks.companyId');
 };
 
 
-QB.prototype._checkAuth = function (doReset) {
+QB.prototype._checkAuth = function (failedRequestData) {
     var t = this;
     
-    if (t._auth === AUTH.INRPOGRESS) return t._auth;
+    //if we in the callback process, all below is not needed
+    if (t._isAuthCallback) return false;
     
-    if (doReset) t.reset();
+    if (failedRequestData) t.reset();
     
-    if (doReset || ! t._service.hasAccess()) {
-        t._auth = AUTH.INRPOGRESS;
+    if (failedRequestData || ! t._service.hasAccess()) {
+        t._auth = false;
         //if not authorised, then call the handler to create a user-facing auth URL
-        t.userOnDenied(t._service.authorize());
+        t.userOnDenied(t._service.authorize(), 
+            failedRequestData ? ("Authorization reason: after failed request, data=" 
+                + JSON.stringify(failedRequestData)) : null
+        );
     } else {
-        t._auth = AUTH.YES;
+        t._auth = true;
     }
     return t._auth;
 };
 
 
 QB.prototype.reset = function() {
-    this._auth = AUTH.NO;
+    this._auth = false;
     this._getService().reset();
 };
 
@@ -69,7 +78,7 @@ QB.prototype.fetch = function(method, entity, idOrNull, params, payload) {
     var t = this;
     var noAuth = {auth: false, error: true};
     
-    if (t._auth !== AUTH.YES) return noAuth;
+    if (! t._auth) return noAuth;
     
     var companyId = t._data.companyId;
 
@@ -92,8 +101,8 @@ QB.prototype.fetch = function(method, entity, idOrNull, params, payload) {
     var code = parseInt(response.getResponseCode());
     var data = response.getContentText();
     if (code != 200){
-        if (code === 401) {
-            t._checkAuth(true);
+        if (code === 401) { //no auth
+            t._checkAuth({code: code, data: data, headers: response.getHeaders()});
             return noAuth;
         }
         return {auth: true, error: true, code: code, data: data};
@@ -141,7 +150,8 @@ QB.prototype._getService = function() {
         .setRequestTokenUrl('https://oauth.intuit.com/oauth/v1/get_request_token')
         .setAuthorizationUrl('https://appcenter.intuit.com/Connect/Begin')
 
-        .setParamLocation('uri-query')
+        //this is NOT working for QuickBooks, using default method via headers
+        //.setParamLocation('uri-query') 
         // Set the consumer key and secret.
         .setConsumerKey(t._creds.consumerKey)
         .setConsumerSecret(t._creds.consumerSecret)
@@ -151,29 +161,39 @@ QB.prototype._getService = function() {
         .setCallbackFunction(t._callbackName)
 
         // Set the property store where authorized tokens should be persisted.
-        .setPropertyStore(PropertiesService.getUserProperties());
+        .setPropertyStore(t._props);
 };
 
 
-QB.prototype.handleCallback = function(request, onAccess) {
-    var t = this;
-    t._service = t._getService();
-    var authorized = t._service.handleCallback(request);
+QB.handleCallback = function(qbOptions, request, onAccess) {
+    var t = new QB(Lib.util.extend({}, qbOptions, {
+        _isAuthCallback: true
+    }));
     
-    t._auth = authorized ? AUTH.YES : AUTH.NO;
+    t._service = t._getService();
+    try {
+        var authorized = t._service.handleCallback(request);
+    }catch (e){
+        return HtmlService.createHtmlOutput('<p><b>OAuth: Internal error: </b></p>' +
+            '<p><b>' + e.message + '</b></p>',
+            '<p>Please check your login/password for ' + t.serviceName + ', close this window, and re-run the script.</p>' + 
+            '<p>Please contact your administrator, it the problem remains, with the error message above.</p>');
+    }
+    
+    t._auth = authorized;
     
     if (authorized) {
         PropertiesService.getUserProperties()
             .setProperty('QuickBooks.companyId', request.parameter.realmId);
         t._refreshData();
         onAccess.call(t); //make sure service object is accessible under 'this'
-        return HtmlService.createHtmlOutput('OAuth Success! You may close this window.');
+        return HtmlService.createHtmlOutput('<b>OAuth Success! You may close this window.</b>');
     }else{
-        return HtmlService.createHtmlOutput('<p>OAuth: Access DENIED!</p>' +
-            '<p>Check login/password for ' + t._name + ', close this window, and re-run the script.</p>' + 
-            '<p>Contact your administrator, it the problem remains after that.</p>');
+        return HtmlService.createHtmlOutput('<p><b>OAuth: Access DENIED!</b></p>' +
+            '<p>Check login/password for ' + t.serviceName + ', close this window, and re-run the script.</p>' + 
+            '<p>Please contact your administrator, it the problem remains after that.</p>');
     }
 };
 
 
-Lib.oauth.QuickBooks = QB;
+Lib.oauth1.QuickBooks = QB;
