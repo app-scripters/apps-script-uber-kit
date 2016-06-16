@@ -1,3 +1,10 @@
+/**
+ * 
+ * @param ssPoolOrData - instance of SSPool 
+ * @param options - Spreadsheet, parameters sheet etc.
+ * @param isClientSide - if Configurator is running on HTML front-end (vs Apps Script back-end)
+ * @constructor
+ */
 function Configurator(ssPoolOrData, options, isClientSide){
     var t = this;
     t._opt = options;
