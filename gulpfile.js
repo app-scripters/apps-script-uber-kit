@@ -49,7 +49,7 @@ var libFiles = constructSources(mods.library, [srcLib]);
 var appFiles = constructSources(mods.app, [appPath + '/app', srcLibPostfix]);
 
 function _build(src, what){
-    var filtWrapper = gulpFilter(['**', '!**/*.0.*.js'], {restore: true});
+    var filtWrapper = gulpFilter(['**', '!**/*._.*.js'], {restore: true});
 
     return gulp.src(src)
         .pipe(cached('build-' + what))        // only pass through changed files

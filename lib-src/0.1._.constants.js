@@ -1,6 +1,6 @@
 //CONSTANTS needs to be available where spreadsheet is not accessible (yet)
 //cannot be moved to sheet-based parameters
-CONSTANTS = {
+var CONSTANTS = {
     
     ADMIN_SPREADSHEET_ID: "",  //empty string means to get active Spreadsheet, good for bounded scripts
     

@@ -17,8 +17,11 @@ Watch this notice removal.**
 
 ## Important notes
 
-- Library and App modules are prefixed with x.x. - this figures are used for optional inclusion of modules
-- x.0. prefixes means gulp should NOT wrap thi module with (function(){})();
+- Library and App modules are prefixed with x.x. 
+    - this numbers are used for ordering of files in bundles
+    - and also for optional inclusion of modules in app's config.js
+
+- *._.* in the file name means gulp should NOT wrap this module with (function(){})();
 
 ###App structure
 
