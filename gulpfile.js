@@ -46,7 +46,8 @@ var mods = require(appPath + '/config').modules;
 
 var vendorFiles = constructSources(mods.external, [srcExternal]);
 var libFiles = constructSources(mods.library, [srcLib]);
-var appFiles = constructSources(mods.app, [appPath + '/app', srcLibPostfix]);
+var appServerGsFiles = constructSources(mods.app, [appPath + '/server/gs', srcLibPostfix]);
+var appServerTemplateFiles = constructSources(mods.app, [appPath + '/server/template']);
 
 function _build(src, what){
     var filtWrapper = gulpFilter(['**', '!**/*._.*.js'], {restore: true});
@@ -75,7 +76,7 @@ gulp.task('build', () => {
 
     console.log('Vendor Files:--------------\n', vendorFiles);
     console.log('Library Files:--------------\n', libFiles);
-    console.log('App Files + Postfix:--------------\n', appFiles);
+    console.log('App Server .gs Files + Postfix:--------------\n', appServerGsFiles);
 
     var vendor = _build(vendorFiles, 'vendor')
         .pipe(concat('1-vendor.js'))         // do things that require all files
@@ -83,7 +84,7 @@ gulp.task('build', () => {
     var lib = _build(libFiles, 'lib')
         .pipe(concat('2-library.js'))         // do things that require all files
         .pipe(gulp.dest(appPath + '/build'));
-    var app = _build(appFiles, 'app')
+    var app = _build(appServerGsFiles, 'app')
         .pipe(concat('3-app.js'))         // do things that require all files
         .pipe(gulp.dest(appPath + '/build'));
     
