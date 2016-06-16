@@ -62,5 +62,5 @@ SSPool.prototype._get = function (ssId, sheetName, createSheetIfMissing, rangeNa
 
 Lib.tool.SSPool = SSPool;
 
-service.ssPool = new SSPool();
+globalService.ssPool = new SSPool();
 

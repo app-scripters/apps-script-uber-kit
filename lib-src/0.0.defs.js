@@ -4,8 +4,7 @@ var UNDEF = "undefined";
 
 var Lib = {};
 
-var service = {};
+var globalService = {};
 
 var CONSTANTS = {};
-
 

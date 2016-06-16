@@ -10,7 +10,7 @@ function QB(options){
         throw new Error("you've forgotten 'new' keyword: var instance = new " + t.serviceName + "(...)");
     }
 
-    t._props = PropertiesService.getUserProperties();
+    t._props = options.store || PropertiesService.getUserProperties();
     t._isAuthCallback = options._isAuthCallback;
     
     t._creds = {
