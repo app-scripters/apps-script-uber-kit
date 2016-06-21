@@ -8,6 +8,7 @@ var headerfooter = require('gulp-headerfooter');
 var minimist = require('minimist');
 //const chmod = require('gulp-chmod');
 var merge = require('merge-stream');
+var stripComments = require('gulp-strip-comments');
 
 const defaultExampleApp = 'sheet';
 
@@ -66,6 +67,8 @@ function _build(src, what){
 
         .pipe(filtWrapper.restore)
 
+        .pipe(stripComments())
+        
         .pipe(remember('build-' + what));      // add back all files to the stream
         //.pipe(concat('bundle.js'))         // do things that require all files
         //.pipe(gulp.dest(appPath + '/build'))

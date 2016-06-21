@@ -29,6 +29,7 @@
     "gulp-headerfooter": "^1.0.3",
     "gulp-jshint": "^2.0.1",
     "gulp-remember": "^0.3.1",
+    "gulp-strip-comments": "^2.4.3",
     "jshint": "^2.9.2",
     "merge-stream": "^1.0.0",
     "minimist": "^1.2.0"
