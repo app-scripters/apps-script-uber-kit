@@ -4,11 +4,15 @@ function SSPool() {
     t._ssSet = {};
 }
 
-SSPool.prototype.get = function (ssId, sheetName, createSheetIfMissing) {
-    return this._get(ssId, sheetName, createSheetIfMissing, false);
+SSPool.prototype.get = function (ssId, sheetName) {
+    return this._get(ssId, sheetName, false, false);
 };
 
-SSPool.prototype.getWithRange = function (ssId, rangeSpec, createSheetIfMissing) {
+SSPool.prototype.getMayCreate = function (ssId, sheetName) {
+    return this._get(ssId, sheetName, true, false);
+};
+
+SSPool.prototype.getWithRange = function (ssId, sheetName, rangeSpec) {
     //TODO
     //return this._get(ssId, sheetName, createSheetIfMissing, rangeName);
 };
@@ -31,8 +35,8 @@ SSPool.prototype._get = function (ssId, sheetName, createSheetIfMissing, rangeNa
         
         t._ssSet[ssId] = {
             ss: ss,
-            sheets: {},
-            ranges: {},
+            sheets: {},  //move ranges here: {"asheet": {sheet: obj, ranges: {}}
+            ranges: {},  //should be per-sheet
             sheet: null, //last fetched sheet
             range: null  //last fetched range
         };
@@ -55,7 +59,8 @@ SSPool.prototype._get = function (ssId, sheetName, createSheetIfMissing, rangeNa
         }
         t._ssSet[ssId].sheet = sheet;
     } else if (sheetName === ''){ //shortcut for the active sheet
-        t._ssSet[ssId].sheet = ss.getActiveSheet();
+        var _sheet = t._ssSet[ssId].sheet = ss.getActiveSheet();
+        t._ssSet[ssId].sheets[_sheet.getName()] = _sheet;
     }
     return t._ssSet[ssId];
 };
