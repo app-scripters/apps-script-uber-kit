@@ -137,4 +137,4 @@ DBCore.prototype._appendRows = function (data) {
     return rows;
 }*/
 
-Lib.tool.BDCore = DBCore;
+Lib.tool.DBCore = DBCore;
