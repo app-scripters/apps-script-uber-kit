@@ -53,9 +53,15 @@ DBCore.prototype.get = function (optStartRowPos, optRowsNumber) {
     return res;
 };
 
-DBCore.prototype.getOne = function (optRowPosition, optRowsNumber) {
-    return this.get(optRowPosition, 1);
+DBCore.prototype.getOne = function (optRowPosition) {
+    return this._range.getValues()[optRowPosition - 1];
 };
+
+
+DBCore.prototype.getLast = function () {
+    return this._range.getValues()[this._height - 1];
+};
+
 
 
 DBCore.prototype.getHeader = function () {
@@ -72,7 +78,7 @@ DBCore.prototype.update = function (startRowNumber, data) {
 
 DBCore.prototype.updateOne = function (rowNumber, row) {
     "use strict";
-    return this.update(rowNumber, [row])
+    return this.update(rowNumber, [row]);
 };
 
 /**
