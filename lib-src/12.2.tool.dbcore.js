@@ -42,15 +42,19 @@ DBCore.prototype._subset = function (startOffset, rowNumber) {
 };
 
 
-DBCore.prototype.getRows = function (optStartRow, optRowsNumber) {
+DBCore.prototype.get = function (optStartRowPos, optRowsNumber) {
     var t = this;
     var res = t._range.getValues();
-    if (optStartRow || optRowsNumber){
-        optStartIndex = (optStartRow || 1) - 1;
+    if (optStartRowPos || optRowsNumber){
+        optStartIndex = (optStartRowPos || 1) - 1;
         optRowsNumber = optRowsNumber || t._height;
         res = res.slice(optStartIndex, optStartIndex + optRowsNumber);
     }
     return res;
+};
+
+DBCore.prototype.getOne = function (optRowPosition, optRowsNumber) {
+    return this.get(optRowPosition, 1);
 };
 
 
@@ -59,12 +63,18 @@ DBCore.prototype.getHeader = function () {
 };
 
 
-DBCore.prototype.updateRows = function (startOffset, data) {
+DBCore.prototype.update = function (startRowNumber, data) {
     var t = this;
     t._checkConstraints(data);
-    t._subset(startOffset, data.length).setValues(data);
+    t._subset(startRowNumber - 1, data.length).setValues(data);
     return true;
 };
+
+DBCore.prototype.updateOne = function (rowNumber, row) {
+    "use strict";
+    return this.update(rowNumber, [row])
+};
+
 /**
  * Rewrites existing data with new
  * @param data
@@ -79,10 +89,15 @@ DBCore.prototype.rewriteAll = function (data) {
 
 /**
  * Appends to existing records
- * @param data
+ * @param row
  * @returns {boolean}
  */
-DBCore.prototype.appendRows = function (data) {
+DBCore.prototype.appendOne = function (row) {
+    return this.append([row]);
+};
+
+
+DBCore.prototype.append = function (data) {
     var t = this;
     t._checkConstraints(data);
     return t._appendRows(data);
