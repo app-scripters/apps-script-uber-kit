@@ -87,22 +87,23 @@ Configurator.prototype.get = function () {
         }
         t._params = {};
         var nextRowSlice = null;
+        var ns = new Lib.util.Namespace(t._params);
         for (var i = t._opt.PARAM_ROWS_STARTS_FROM - 1; i < values.length; i++){
             var row = values[i];
-            var name = row[t._opt.PARAM_NAME_POSITION - 1];
-            if (name && ! /^\s*\/\//.test(name)) {   // '//' to comment'
+            var namePath = row[t._opt.PARAM_NAME_POSITION - 1];
+            if (namePath && ! /^\s*\/\//.test(namePath)) {   // '//' to comment'
                 var atype = row[t._opt.PARAM_TYPE_POSITION - 1];
                 if (atype === 'map'){
                     i++;
                     if (i < values.length){
                         nextRowSlice = values[i].slice(t._opt.PARAM_VALUE_POSITION - 1)
                     }else{
-                        throw Error("Map '" + name + "': there are no second row")
+                        throw Error("Map '" + namePath + "': there are no second row")
                     }
                 }else{
                     nextRowSlice = null;
                 }
-                Lib.util.walkNamespace(t._params, name,
+                ns.set(namePath,
                     t._getByType(
                         row.slice(t._opt.PARAM_VALUE_POSITION - 1),
                         row[t._opt.PARAM_VALUE_POSITION - 1],
