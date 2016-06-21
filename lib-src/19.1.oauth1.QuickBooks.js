@@ -59,7 +59,7 @@ QB.prototype._checkAuth = function (failedRequestData) {
         //if not authorised, then call the handler to create a user-facing auth URL
         t.userOnDenied(t._service.authorize(), 
             failedRequestData ? ("Authorization reason: after failed request, data=" 
-                + JSON.stringify(failedRequestData)) : null
+                + JSON.stringify(failedRequestData)) : ''
         );
     } else {
         t._auth = true;
