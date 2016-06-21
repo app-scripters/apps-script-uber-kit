@@ -96,9 +96,7 @@ Lib.util.letterToColumn = function (letter) {
     return column;
 };
 
-
-Lib.util.getRangeValues = function(sheet, startRC, howManyRC) {
-    opt = opt || {};
+Lib.util.getRange = function(sheet, startRC, howManyRC) {
     var row_num = sheet.getLastRow() - startRC[0] + 1;
     var column_num = sheet.getLastColumn() - startRC[1] + 1;
     if (row_num < 1) return [];
@@ -106,7 +104,7 @@ Lib.util.getRangeValues = function(sheet, startRC, howManyRC) {
     return sheet.getRange(startRC[0], startRC[1],
         howManyRC[0] !== null ? howManyRC[0] : row_num,
         howManyRC[0] !== null ? howManyRC[0] : column_num
-    ).getValues();
+    );
 };
 
 
@@ -121,13 +119,13 @@ Lib.util.appendCell = function(sheet, data, start_c) {
 };
 
 
-Lib.util.appendRows = function appendRows(sheet, dataOrRowsNumber, optStartColumn, columnNameToScanForEndORstartRow) {
+Lib.util.writeRows = function(sheet, data, optStartColumn, columnNameToScanForEndORLastRow, numberOfRowsToExtend) {
     var o = {};
     var max_rows = sheet.getMaxRows();
     var last_row = 1;
-    if (typeof columnNameToScanForEndORstartRow !== UNDEF) {
-        if (typeof columnNameToScanForEndORstartRow === 'string') { //column name
-            var values = sheet.getRange(columnNameToScanForEndORstartRow + '1:' + columnNameToScanForEndORstartRow).getValues();
+    if (columnNameToScanForEndORLastRow != null) { //null or undefined
+        if (typeof columnNameToScanForEndORLastRow === 'string') { //column name
+            var values = sheet.getRange(columnNameToScanForEndORLastRow + '1:' + columnNameToScanForEndORLastRow).getValues();
             for (var r = values.length - 1; r >= 0; r--) {
                 if (values[r][0]) {
                     last_row = r + 1;
@@ -135,25 +133,21 @@ Lib.util.appendRows = function appendRows(sheet, dataOrRowsNumber, optStartColum
                 }
             }
         } else { //should be a number
-            last_row = columnNameToScanForEndORstartRow;
+            last_row = columnNameToScanForEndORLastRow;
         }
     } else {
         last_row = sheet.getLastRow();
     }
 
-    var appendOnly = typeof dataOrRowsNumber === 'number';
-
-    var l = appendOnly ? dataOrRowsNumber : dataOrRowsNumber.length;
+    var l = data.length;
 
     if (max_rows - last_row < l) {
-        sheet.insertRowsAfter(max_rows, l - (max_rows - last_row) + 1);
+        sheet.insertRowsAfter(max_rows, l - (max_rows - last_row) + (numberOfRowsToExtend || 1));
         o.inserted = true;
     }
 
-    if (!appendOnly) {
-        var range = sheet.getRange(last_row + 1, optStartColumn || 1, dataOrRowsNumber.length, dataOrRowsNumber[0].length); //data should be normalized - all columns with the same size
-        range.setValues(dataOrRowsNumber);
-    }
+    var range = sheet.getRange(last_row + 1, optStartColumn || 1, data.length, data[0].length); //data should be normalized - all columns with the same size
+    range.setValues(data);
 
     return o;
 };
