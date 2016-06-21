@@ -51,7 +51,7 @@ function walkNamespace(baseNS, namePathString, optValue) {
                 return null;
             }
         }
-        part = part[nameParts[i]];
+        part = part[key];
     }
 
     if (typeof optValue !== "undefined") {
