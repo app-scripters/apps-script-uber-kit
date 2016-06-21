@@ -22,7 +22,7 @@ SSPool.prototype._get = function (ssId, sheetName, createSheetIfMissing, rangeNa
     t.error = null;
     var ss;
     if (! (ssId in t._ssSet)){
-        if (ssId === ''){
+        if (ssId === '' || ssId === 'this'){
             ss = SpreadsheetApp.getActiveSpreadsheet();
             ssId = ss.getId();
         }else {
