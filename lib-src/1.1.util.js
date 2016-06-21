@@ -84,6 +84,7 @@ Lib.util.columnToLetter = function (column) {
     return letter;
 };
 
+
 Lib.util.letterToColumn = function (letter) {
     var num = parseInt(letter);
     if (!isNaN(num)) return num;
@@ -94,6 +95,31 @@ Lib.util.letterToColumn = function (letter) {
     }
     return column;
 };
+
+
+Lib.util.getRangeValues = function(sheet, startRC, howManyRC) {
+    opt = opt || {};
+    var row_num = sheet.getLastRow() - startRC[0] + 1;
+    var column_num = sheet.getLastColumn() - startRC[1] + 1;
+    if (row_num < 1) return [];
+    if (column_num < 1) return [];
+    return sheet.getRange(startRC[0], startRC[1],
+        howManyRC[0] !== null ? howManyRC[0] : row_num,
+        howManyRC[0] !== null ? howManyRC[0] : column_num
+    ).getValues();
+};
+
+
+Lib.util.appendCell = function(sheet, data, start_c) {
+    var max_rows = sheet.getMaxRows();
+    var last_row = sheet.getLastRow();
+    if (max_rows - last_row === 0) {
+        sheet.insertRowsAfter(max_rows, 1)
+    }
+    var range = sheet.getRange(last_row + 1, start_c || 1, 1, 1); //data should be normalized - all columns with the same size
+    range.setValue(data);
+};
+
 
 Lib.util.appendRows = function appendRows(sheet, dataOrRowsNumber, optStartColumn, columnNameToScanForEndORstartRow) {
     var o = {};
