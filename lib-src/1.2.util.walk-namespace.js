@@ -7,7 +7,15 @@
 function walkNamespace(baseNS, namePathString, optValue) {
 
     var nameParts;
-
+    
+    //quick check for simplest case
+    if (namePathString.indexOf('.') === -1) {
+        if (optValue){
+            baseNS[namePathString] = optValue;
+        }
+        return baseNS[namePathString]
+    }
+    
     if (namePathString.indexOf('...') !== -1) {
         if (namePathString.indexOf('...') === 0 && walkNamespace.lastNamePrefix) {
             nameParts = walkNamespace.lastNamePrefix.concat(namePathString.slice(3).split(/\s*\.\s*/));
