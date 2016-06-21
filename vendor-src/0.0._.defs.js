@@ -1,1 +1,3 @@
 ;var Vendor = {};
+
+var _ = {};

@@ -9,13 +9,9 @@ Lib.util.uuid = function () {
     });
 };
 
-Lib.util.isArray = function (obj) {
-    return Object.prototype.toString.call(obj) === '[object Array]';
-};
+Lib.util.isArray = _.isArray;
 
-Lib.util.isObject = function (obj) {
-    return Object.prototype.toString.call(obj) === '[object Object]';
-};
+Lib.util.isObject = _.isObject;
 
 Lib.util.escapeRegExp = function (str) {
     return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
@@ -56,20 +52,7 @@ Lib.util.trace = function (err) {
  * Extends or overwrites
  * @returns {*|{}}
  */
-Lib.util.extend = function () {
-    var destination = arguments[0] || {};
-    for (var i = 1; i < arguments.length; i++) {
-        var source = arguments[i];
-        if (source) {
-            for (var property in source) {
-                if (source.hasOwnProperty(property)) {
-                    destination[property] = source[property];
-                }
-            }
-        }
-    }
-    return destination;
-};
+Lib.util.extend = _.extend;
 
 
 Lib.util.columnToLetter = function (column) {
