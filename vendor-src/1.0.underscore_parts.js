@@ -22,6 +22,8 @@ for(var name in {'Arguments':0, 'Number':0, 'Date':0, 'RegExp':0, 'Error':0}){
     };
 }
 
+_.keys = Object.keys;
+
 _.isNaN = isNaN; //Supported by Apps Script
 
 _.isArray = Array.isArray; //Supported by Apps script
@@ -41,7 +43,7 @@ _.isFunction = function (s) {
 _.isEmpty = function (obj) {
     if (obj == null) return true;
     if (isArrayLike(obj) && (_.isArray(obj) || _.isString(obj) || _.isArguments(obj))) return obj.length === 0;
-    return _.keys(obj).length === 0;
+    return Object.keys(obj).length === 0;
 };
 
 _.extend = function () {
