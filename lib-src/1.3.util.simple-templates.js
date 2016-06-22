@@ -7,7 +7,7 @@
  * @returns {void|XML|string|*}
  */
 Lib.util.bindTemplate = function(s, argsDict, overrideDicts){
-    var capturer = Lib.util.isArray(argsDict) ? 
+    var capturer = Array.isArray(argsDict) ? 
         Lib.util.bindTemplate._arrayCtxCapture(argsDict, overrideDicts) : 
         Lib.util.bindTemplate._simpleCapture(argsDict);
     

@@ -9,8 +9,6 @@ Lib.util.uuid = function () {
     });
 };
 
-Lib.util.isArray = _.isArray;
-
 Lib.util.isObject = _.isObject;
 
 Lib.util.escapeRegExp = function (str) {

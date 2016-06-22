@@ -14,17 +14,28 @@ var isArrayLike = function (obj) {
     return typeof length == 'number' && length >= 0 && length <= MAX_ARRAY_INDEX;
 };
 
-_.isArray = function (obj) {
-    return _toString.call(obj) === '[object Array]';
-};
+
+for(var name in {'Arguments':0, 'Number':0, 'Date':0, 'RegExp':0, 'Error':0}){
+    const n2 = name;
+    _['is' + n2] = function (obj) {
+        return _toString.call(obj) === '[object ' + n2 + ']';
+    };
+}
+
+_.isNaN = isNaN; //Supported by Apps Script
+
+_.isArray = Array.isArray; //Supported by Apps script
 
 _.isObject = function (obj) {
-    var type = typeof obj;
-    return type === 'function' || type === 'object' && !!obj;
+    return typeof obj === 'object' && !!obj;
 };
 
 _.isString = function (s) {
     return typeof s === 'string'
+};
+
+_.isFunction = function (s) {
+    return typeof s === 'function'
 };
 
 _.isEmpty = function (obj) {

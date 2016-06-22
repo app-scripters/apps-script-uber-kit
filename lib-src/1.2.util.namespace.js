@@ -66,7 +66,7 @@ Namespace.prototype._walkNamespace = function(pathString, mode, optValue){
 
     for (var i=0; i < l; i++){
         //the next comparison works both for objects and arrays
-        if (isArray(chain)){
+        if (Array.isArray(chain)){
             key = parseInt(nameParts[i]);
             if (isNaN(key)) return null; //just silently skip, arrays cannot contain keys for processing
             key = key - 1; //1-based indexes
