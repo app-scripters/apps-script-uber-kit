@@ -11,6 +11,7 @@ function Configurator(ssPoolOrData, options, isClientSide){
     if (typeof t._opt.doTrim === UNDEF){
         t._opt.doTrim = true;
     }
+    t._doTrim = t._opt.doTrim;
     if (isClientSide){
         t._isClient = true;
         t._data = ssPoolOrData;
@@ -21,45 +22,36 @@ function Configurator(ssPoolOrData, options, isClientSide){
 }
 
 Configurator.prototype._handlers = {
-    'string': function(val){return String(val);},
-    'string.trim': function(val){return String(val).trim();},
+    'string': function(val){return this._doTrim ? String(val).trim() : String(val);},
     'integer': function(val){return parseInt(val);},
     'float': function(val){return parseFloat(val);},
     'JSON': function(val){return JSON.parse(val.toString());},
     'date': function(val){return new Date(val);},
     'list': function(val, splitter){
-        return val.toString().split(splitter || ',');
-    },
-    'list.trim': function(val, splitter){
-        return String(val).trim()
-            .split(Lib.util.makeRegex('\\s*', (splitter || ','), '\\s*'));
+        return this._doTrim ? 
+            String(val).trim().split(Lib.util.makeRegex('\\s*', (splitter || ','), '\\s*')) :
+            String(val).split(splitter || ',');
     },
     'array': function(val, terminator, row){
-        return row.slice(0, row.indexOf(terminator || ""));
-    },
-    'array.trim': function(val, terminator, row){
-        return row.slice(0, row.indexOf(terminator || ""))
-            .map(function(el){return el.trim();});
+        const arr = row.slice(0, row.indexOf(terminator || ""));
+        return this._doTrim ? arr.map(function(el){
+                    return String(el).trim();
+            }) : arr;
     },
     'map': function(val, terminator, row, nextRow){
         var row1 = row.slice(0, row.indexOf(terminator || ""));
         var row2 = nextRow.slice(0, row.indexOf(terminator || ""));
 
-        var res = {
-            D: {},  //direct mapping
-            R: {}    //reverse mapping
-        };
+        var res = {};
         
         var i;
         if (this._opt.doTrim) {
             for (i = 0; i < row1.length; i++) {
-                res.D[String(row1[i])] = String(row2[i]);
-                res.R[String(row2[i])] = String(row1[i]);
+                res[String(row1[i]).trim()] = String(row2[i]).trim();
             }
         }else{
             for (i = 0; i < row1.length; i++) {
-                res.D[String(row1[i]).trim()] = String(row2[i]).trim();
-                res.R[String(row2[i]).trim()] = String(row1[i]).trim();
+                res[String(row1[i])] = String(row2[i]);
             }
         }
         return res;
@@ -68,9 +60,7 @@ Configurator.prototype._handlers = {
 
 
 Configurator.prototype._getByType = function (row, value, atype, splitterOrTerminator, nextRow) {
-    return (this._handlers[atype + (this._opt.doTrim ? '.trim' : '')] 
-        || this._handlers[atype]) //in case .trim is not available
-        .call(this, value, splitterOrTerminator, row, nextRow);
+    return this._handlers[atype].call(this, value, splitterOrTerminator, row, nextRow);
 };
 
 Configurator.prototype.get = function () {
