@@ -11,6 +11,10 @@ Lib.util.uuid = function () {
 
 Lib.util.isObject = _.isObject;
 
+Lib.util.yes = function (s) {
+    return String(s).toLowerCase().trim()[0] in {'y':0, 't':0}; //Yes, True
+};
+
 Lib.util.escapeRegExp = function (str) {
     return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 };
