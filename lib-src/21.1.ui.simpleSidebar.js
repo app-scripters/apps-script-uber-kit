@@ -1,12 +1,17 @@
-function showSimpleSidebar(AppType, title, templateName) {
+function showSimpleSidebar(AppType, options, context) {
+    const width = 300;
+    options = options || {};
     //try {
-    var html = HtmlService.createTemplateFromFile(templateName || "sidebar")
-        .evaluate()
+    const template = HtmlService.createTemplateFromFile(options.templateName || "sidebar");
+    if (context){
+        Lib.util.extend(template, context);
+    }
+    const output = template.evaluate()
         .setSandboxMode(HtmlService.SandboxMode.IFRAME)
-        .setTitle(title || 'Tools')
-        .setWidth(config().SIDEBAR_WIDTH);
+        .setTitle(options.title || 'Tools')
+        .setWidth(width); //non-changable now ===300 px
 
-    AppType.getUi().showSidebar(html);
+    AppType.getUi().showSidebar(output);
     //} catch(e){
     //    Logging.log(e.message);
     //}
