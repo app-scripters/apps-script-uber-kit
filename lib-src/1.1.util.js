@@ -76,6 +76,12 @@ Lib.util.unite = function (destination, dictArray) {
     return destination;
 };
 
+Lib.util.makeFilledArray = function(length, value){
+    if (length < 1) return [];
+    const arr = new Array(length).join('|' +  (value || '')).split('|');
+    if (value) arr[0] = value;
+    return arr;
+};
 
 Lib.util.columnToLetter = function (column) {
     if (typeof column === "string") return column;
@@ -107,7 +113,7 @@ Lib.util.getRange = function(sheet, startRC, howManyRC) {
     if (row_num < 1 || column_num < 1) return null;
     return sheet.getRange(startRC[0], startRC[1],
         howManyRC[0] !== null ? howManyRC[0] : row_num,
-        howManyRC[0] !== null ? howManyRC[0] : column_num
+        howManyRC[1] !== null ? howManyRC[1] : column_num
     );
 };
 
