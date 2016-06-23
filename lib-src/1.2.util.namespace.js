@@ -11,11 +11,17 @@ function Namespace(ns) {
     t._lastNamePrefix = null;
 }
 
+/**
+ * Gets the descriptor with value and scope, or returns null if not found
+ * @param path
+ * @param name
+ * @returns {{value, scope}|{scope}|null}
+ */
 Namespace.prototype.get = function (path, name) {
     if (typeof name !== "undefined"){
         path = path + "." + name;
     }
-    return this._walkNamespace(path, "get").value;
+    return this._walkNamespace(path, "get");
 };
 
 Namespace.prototype.set = function (path, value) {
