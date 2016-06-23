@@ -55,16 +55,23 @@ QB.prototype._checkAuth = function (failedRequestData) {
     if (failedRequestData) t.reset();
     
     if (failedRequestData || ! t._service.hasAccess()) {
-        t._auth = false;
-        //if not authorised, then call the handler to create a user-facing auth URL
-        t.userOnDenied(t._service.authorize(), 
-            failedRequestData ? ("Authorization reason: after failed request, data=" 
-                + JSON.stringify(failedRequestData)) : ''
-        );
+        t._voidAuth(failedRequestData);
     } else {
         t._auth = true;
     }
     return t._auth;
+};
+
+
+QB.prototype._voidAuth = function (failedRequestData) {
+    var t = this;
+    
+    t._auth = false;
+    
+    t.userOnDenied(t._service.authorize(), 
+        failedRequestData ? ("Authorization reason: after failed request, data=" 
+            + JSON.stringify(failedRequestData)) : ''
+    );
 };
 
 
@@ -81,6 +88,12 @@ QB.prototype.fetch = function(method, entity, idOrNull, params, payload) {
     if (! t._auth) return noAuth;
     
     var companyId = t._data.companyId;
+    
+    if (! companyId){
+        t.reset();
+        t._voidAuth();
+        return noAuth;
+    }
 
     var url = 'https://quickbooks.api.intuit.com/v3/company/' +
         companyId + '/' + entity +
@@ -96,8 +109,9 @@ QB.prototype.fetch = function(method, entity, idOrNull, params, payload) {
         opts.payload = payload;
         opts.contentType = 'application/json';
     }
-    
-    var response = t._service.fetch(url + Lib.util.makeUrlParams(params), opts);
+    const finalUrl = url + Lib.util.makeUrlParams(params);
+    Logger.log("final URL = " + finalUrl);
+    var response = t._service.fetch(finalUrl, opts);
     var code = parseInt(response.getResponseCode());
     var data = response.getContentText();
     if (code != 200){
