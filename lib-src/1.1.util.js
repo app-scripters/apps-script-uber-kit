@@ -56,6 +56,26 @@ Lib.util.trace = function (err) {
  */
 Lib.util.extend = _.extend;
 
+/**
+ * Like _.defaults, with different signature
+ * @param destination - is modified
+ * @param dictArray - to be merged without overwrites
+ * @returns {*}
+ */
+Lib.util.unite = function (destination, dictArray) {
+    for (var i = 1; i < dictArray.length; i++) {
+        var source = dictArray[i];
+        if (source) {
+            for (var property in source) {
+                if (source.hasOwnProperty(property) && ! (property in destination)) {
+                    destination[property] = source[property];
+                }
+            }
+        }
+    }
+    return destination;
+};
+
 
 Lib.util.columnToLetter = function (column) {
     if (typeof column === "string") return column;
