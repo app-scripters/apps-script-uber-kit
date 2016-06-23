@@ -34,16 +34,9 @@ Namespace.prototype._walkNamespace = function(pathString, mode, optValue){
     var t = this;
     var nameParts;
 
-    //quick check for simplest case
-    if (pathString.indexOf('.') === -1) {
-        if (mode === 'set'){
-            t._ns[pathString] = optValue;
-        }
-        return t._ns[pathString]
-    }
-    
-    if (pathString.indexOf('...') !== -1) {
-        if (pathString.indexOf('...') === 0 && t._lastNamePrefix) {
+    const ellipsisIdx = pathString.indexOf('...');
+    if (ellipsisIdx !== -1) {
+        if (ellipsisIdx === 0 && t._lastNamePrefix) {
             nameParts = t._lastNamePrefix.concat(pathString.slice(3).split(/\s*\.\s*/));
         } else {
             throw Error('Wrong usage of "..." syntax ' +
