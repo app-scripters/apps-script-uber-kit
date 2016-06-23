@@ -130,7 +130,7 @@ Lib.util.appendCell = function(sheet, data, start_c) {
 
 
 Lib.util.writeRows = function(sheet, data, optStartColumn, columnNameToScanForEndORLastRow, numberOfRowsToExtend) {
-    var o = {};
+    var o = {done: false};
     var max_rows = sheet.getMaxRows();
     var last_row = 1;
     if (columnNameToScanForEndORLastRow != null) { //null or undefined
@@ -158,7 +158,9 @@ Lib.util.writeRows = function(sheet, data, optStartColumn, columnNameToScanForEn
 
     var range = sheet.getRange(last_row + 1, optStartColumn || 1, data.length, data[0].length); //data should be normalized - all columns with the same size
     range.setValues(data);
-
+    
+    o.done = true;
+    
     return o;
 };
 

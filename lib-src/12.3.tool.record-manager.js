@@ -30,7 +30,7 @@ RecordManager.prototype._extractData = function(data){
 };
 
 
-RecordManager.prototype.getFieldIndex = function (fieldName) {
+RecordManager.prototype.getColumnIndex = function (fieldName) {
     var t = this;
     if (! fieldName) return null;
     return t._namesToIndexes[String(fieldName).trim()] + 1;
@@ -39,7 +39,7 @@ RecordManager.prototype.getFieldIndex = function (fieldName) {
 RecordManager.prototype.getField = function (fieldName, row) {
     var t = this;
     if (! fieldName || ! row) return null;
-    return row[t.getFieldIndex(fieldName)];
+    return row[t._namesToIndexes[String(fieldName).trim()]];
 };
 
 

@@ -135,10 +135,7 @@ DBCore.prototype.append = function (data) {
 DBCore.prototype._appendRows = function (data) {
     var t = this;
     var res = Lib.util.writeRows(t._sheet, data, t._startColumn);
-    if (res.inserted){
-        //need to update original range, because new column where inserted at the bottom
-        t._initActualRange();
-    } 
+     t._initActualRange();
     //SpreadsheetApp.flush();
     return true
 };

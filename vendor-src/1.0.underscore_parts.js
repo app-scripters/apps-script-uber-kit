@@ -17,7 +17,7 @@ var isArrayLike = function (obj) {
 
 for (var name in {'Arguments': 0, 'Number': 0, 'Date': 0, 'RegExp': 0, 'Error': 0}) {
     (function (name) {
-        _['is' + n2] = function (obj) {
+        _['is' + name] = function (obj) {
             return _toString.call(obj) === '[object ' + name + ']';
         };
     })(name);
