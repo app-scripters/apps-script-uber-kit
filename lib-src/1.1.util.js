@@ -84,8 +84,7 @@ Lib.util.letterToColumn = function (letter) {
 Lib.util.getRange = function(sheet, startRC, howManyRC) {
     var row_num = sheet.getLastRow() - startRC[0] + 1;
     var column_num = sheet.getLastColumn() - startRC[1] + 1;
-    if (row_num < 1) return [];
-    if (column_num < 1) return [];
+    if (row_num < 1 || column_num < 1) return null;
     return sheet.getRange(startRC[0], startRC[1],
         howManyRC[0] !== null ? howManyRC[0] : row_num,
         howManyRC[0] !== null ? howManyRC[0] : column_num

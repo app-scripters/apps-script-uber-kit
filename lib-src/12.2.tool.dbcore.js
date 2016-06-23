@@ -3,6 +3,7 @@ function DBCore(sheet, headerRowPosition, startColumn, width) {
     t._sheet = sheet;
     t._startColumn = startColumn || 1;
     t._width = width || null;
+    t._height = 0;
     t._headerRowPos = headerRowPosition;
     t._header = Lib.util.getRange(
         t._sheet,
@@ -24,8 +25,10 @@ DBCore.prototype._initActualRange = function () {
         t._sheet,
         [t._headerRowPos + 1, t._startColumn], [null, t._width]
     );
-    t._height = t._range.getHeight();
-    t._width = t._range.getWidth(); //actual width if not specified
+    if (t._range !== null) {
+        t._height = t._range.getHeight();
+        t._width = t._range.getWidth(); //actual width if not specified
+    }
 };
 
 
@@ -37,6 +40,7 @@ DBCore.prototype._checkConstraints = function (data) {
 
 DBCore.prototype._subset = function (startOffset, rowNumber) {
     var t = this;
+    if (t._range === null) return null;
     if (!startOffset && !rowNumber) return t._range; //optimization
     return t._range.offset(startOffset || 0, 0, rowNumber || t._height, t._width);
 };
@@ -44,6 +48,7 @@ DBCore.prototype._subset = function (startOffset, rowNumber) {
 
 DBCore.prototype.get = function (optStartRowPos, optRowsNumber) {
     var t = this;
+    if (t._range === null) return null;
     var res = t._range.getValues();
     if (optStartRowPos || optRowsNumber){
         optStartIndex = (optStartRowPos || 1) - 1;
@@ -54,11 +59,13 @@ DBCore.prototype.get = function (optStartRowPos, optRowsNumber) {
 };
 
 DBCore.prototype.getOne = function (optRowPosition) {
+    if (this._range === null) return null;
     return this._range.getValues()[optRowPosition - 1];
 };
 
 
 DBCore.prototype.getLast = function () {
+    if (this._range === null) return null;
     return this._range.getValues()[this._height - 1];
 };
 
@@ -72,8 +79,12 @@ DBCore.prototype.getHeader = function () {
 DBCore.prototype.update = function (startRowNumber, data) {
     var t = this;
     t._checkConstraints(data);
-    t._subset(startRowNumber - 1, data.length).setValues(data);
-    return true;
+    const subs = t._subset(startRowNumber - 1, data.length);
+    if (subs !== null){
+        subs.setValues(data);
+        return true;
+    }
+    return false;
 };
 
 DBCore.prototype.updateOne = function (rowNumber, row) {
@@ -89,7 +100,7 @@ DBCore.prototype.updateOne = function (rowNumber, row) {
 DBCore.prototype.rewriteAll = function (data) {
     var t = this;
     t._checkConstraints(data);
-    t._range.clearContent();
+    if (t._range) t._range.clearContent();
     return t._appendRows(data);
 };
 

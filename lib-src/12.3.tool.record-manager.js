@@ -14,7 +14,7 @@ RecordManager.prototype._mapNames = function () {
     var t = this,
         m = {};
     var names = t._namesArray;
-    for (var i in t._namesArray) {
+    for (var i=0; i < t._namesArray.length; i++) {
         m[String(names[i]).toLowerCase().trim()] = i;
     }
 
@@ -32,18 +32,22 @@ RecordManager.prototype._extractData = function(data){
 
 RecordManager.prototype.getFieldIndex = function (fieldName) {
     var t = this;
+    if (! fieldName) return null;
     return t._namesToIndexes[fieldName.toLowerCase().trim()] + 1;
 };
 
 RecordManager.prototype.getField = function (fieldName, row) {
     var t = this;
-    return row[t.getFieldIndex(fieldName.toLowerCase().trim())];
+    if (! fieldName || ! row) return null;
+    return row[t.getFieldIndex(fieldName)];
 };
 
 
 RecordManager.prototype.toRecord = function (row) {
     var t = this;
     var record = {};
+
+    if (! row) return null;
     
     for (var i in row){
         var name = t._namesArray[i];
@@ -57,6 +61,8 @@ RecordManager.prototype.toRecord = function (row) {
 RecordManager.prototype.toRow = function (record) {
     var t = this;
     var row = new Array(t._namesArray.length);
+
+    if (! record) return null;
     
     for (var name in record){
         var i = t._namesToIndexes[name];
