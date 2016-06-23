@@ -60,7 +60,7 @@ RecordManager.prototype.toRecord = function (row) {
 
 RecordManager.prototype.toRow = function (record) {
     var t = this;
-    var row = new Array(t._namesArray.length);
+    var row = Lib.util.makeFilledArray(t._namesArray.length, '');
 
     if (! record) return null;
     
