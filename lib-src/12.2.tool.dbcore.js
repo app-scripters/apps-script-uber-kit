@@ -1,14 +1,24 @@
-function DBCore(sheet, headerRowPosition, startColumn, width) {
+/**
+ * 
+ * @param sheet
+ * @param headerRowPosition
+ * @param startColumn
+ * @param optWidth - actual Header and range width, needed to be specified in case ti is shorter then data range in the header row
+ * @constructor
+ */
+function DBCore(sheet, headerRowPosition, startColumn, optWidth) {
     var t = this;
     t._sheet = sheet;
     t._startColumn = startColumn || 1;
-    t._width = width || null;
-    t._height = 0;
+    
     t._headerRowPos = headerRowPosition;
     t._header = Lib.util.getRange(
         t._sheet,
-        [t._headerRowPos, t._startColumn], [1, t._width]
+        [t._headerRowPos, t._startColumn], [1, optWidth || null]
     ).getValues()[0];
+    
+    t._width = t._header.length;
+    t._height = 0;
     
     t._initActualRange();
 }
@@ -27,14 +37,15 @@ DBCore.prototype._initActualRange = function () {
     );
     if (t._range !== null) {
         t._height = t._range.getHeight();
-        t._width = t._range.getWidth(); //actual width if not specified
     }
 };
 
 
 DBCore.prototype._checkConstraints = function (data) {
     var t = this;
-    if (data[0].length !== t._width) throw Error("Data width != range width");
+    if (data[0].length !== t._width) {
+        throw Error("Data width =" + data[0].length + " !== range width =" + t._width);
+    }
 };
 
 
