@@ -13,8 +13,10 @@ Lib.util.bindTemplate = function(s, argsDict){
 
     var ns = new Lib.util.Namespace(argsDict);
 
-    return s.replace(/{{\s*(\w+)\s*}}/g, _makeCapturer(argsDict, ns));
+    return s.replace(regex, _makeCapturer(argsDict, ns));
 };
+
+const regex = /\{\{\s*([\w\$\.]+)\s*\}\}/g;
 
 function _makeCapturer(argsDict, ns){
     return function(capture, p1){
