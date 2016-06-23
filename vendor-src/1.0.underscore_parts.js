@@ -15,11 +15,12 @@ var isArrayLike = function (obj) {
 };
 
 
-for(var name in {'Arguments':0, 'Number':0, 'Date':0, 'RegExp':0, 'Error':0}){
-    const n2 = name;
-    _['is' + n2] = function (obj) {
-        return _toString.call(obj) === '[object ' + n2 + ']';
-    };
+for (var name in {'Arguments': 0, 'Number': 0, 'Date': 0, 'RegExp': 0, 'Error': 0}) {
+    (function (name) {
+        _['is' + n2] = function (obj) {
+            return _toString.call(obj) === '[object ' + name + ']';
+        };
+    })(name);
 }
 
 _.keys = Object.keys;

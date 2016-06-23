@@ -63,7 +63,7 @@ Lib.util.extend = _.extend;
  * @returns {*}
  */
 Lib.util.unite = function (destination, dictArray) {
-    for (var i = 1; i < dictArray.length; i++) {
+    for (var i = 0; i < dictArray.length; i++) {
         var source = dictArray[i];
         if (source) {
             for (var property in source) {

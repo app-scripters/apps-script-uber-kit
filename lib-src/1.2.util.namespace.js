@@ -24,16 +24,23 @@ Namespace.prototype.get = function (path, name) {
     return this._walkNamespace(path, "get");
 };
 
+Namespace.prototype.getValue = function (path, name) {
+    const d = this.get(path, name);
+    return d === null ? null : d.value;
+};
+
 Namespace.prototype.set = function (path, value) {
     return this._walkNamespace(path, "set", value);
 };
 
 /**
- * builds or gets the scope by path
- * scopeObject - empty array or object
+ * Builds the namespace and places the scope object into it
+ * @param path
+ * @param scopeObject
+ * @returns {*} descriptor
  */
-Namespace.prototype.buildScope = function (path, scopeObject) {
-    return this._walkNamespace(path, "build", scopeObject).scope;
+Namespace.prototype.build = function (path, scopeObject) {
+    return this._walkNamespace(path, "build", scopeObject);
 };
 
 Namespace.prototype._walkNamespace = function(pathString, mode, optValue){
