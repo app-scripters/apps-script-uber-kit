@@ -6,32 +6,23 @@
  * @param overrideDicts - for array of contexts case: process all contexts and override, or stop on first matching context var
  * @returns {void|XML|string|*}
  */
-Lib.util.bindTemplate = function(s, argsDict, overrideDicts){
-    var capturer = Array.isArray(argsDict) ? 
-        Lib.util.bindTemplate._arrayCtxCapture(argsDict, overrideDicts) : 
-        Lib.util.bindTemplate._simpleCapture(argsDict);
-    
-    return s.replace(/{{\s*\w+\s*}}/ig, capturer);
+Lib.util.bindTemplate = function(s, argsDict){
+    if (Array.isArray(argsDict)){
+        argsDict = Lib.util.unite({}, argsDict);
+    }
+
+    var ns = new Lib.util.Namespace(argsDict);
+
+    return s.replace(/{{\s*(\w+)\s*}}/g, _makeCapturer(argsDict, ns));
 };
 
-Lib.util.bindTemplate._simpleCapture = function(argsDict){
-    return function(capture){
-        return argsDict[capture.match(/\w+/i)]
-    }  
-};
-
-
-Lib.util.bindTemplate._arrayCtxCapture = function(arrayOfArgsDict, overrideDicts){
-    return function(capture){
-        var result = '';
-        var key = capture.match(/\w+/i); 
-        for (var i = 0; i < arrayOfArgsDict.length; i++) {
-            var dict = arrayOfArgsDict[i];
-            if (key in dict){
-                result = dict[key];
-                if (! overrideDicts) break;
-            }
+function _makeCapturer(argsDict, ns){
+    return function(capture, p1){
+        if (p1.indexOf('.') === -1){
+            return argsDict[p1] || '';
+        }else {
+            const res = ns.get(p1);
+            return res === null ? '' : res.value;
         }
-        return result;
     }  
-};
+}
