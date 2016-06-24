@@ -2,14 +2,14 @@
  * 
  * @param sheet
  * @param headerRowPosition
- * @param startColumn
+ * @param optStartColumn
  * @param optWidth - actual Header and range width, needed to be specified in case ti is shorter then data range in the header row
  * @constructor
  */
-function DBCore(sheet, headerRowPosition, startColumn, optWidth) {
+function DBCore(sheet, headerRowPosition, optStartColumn, optWidth) {
     var t = this;
     t._sheet = sheet;
-    t._startColumn = startColumn || 1;
+    t._startColumn = optStartColumn || 1;
     
     t._headerRowPos = headerRowPosition;
     t._header = Lib.util.getRange(
@@ -24,8 +24,8 @@ function DBCore(sheet, headerRowPosition, startColumn, optWidth) {
 }
 
 
-DBCore.prototype.getBaseRow = function () {
-    return this._headerRowPos + 1;
+DBCore.prototype.getRowBase = function () {
+    return this._headerRowPos;
 };
 
 
@@ -69,9 +69,9 @@ DBCore.prototype.get = function (optStartRowPos, optRowsNumber) {
     return res;
 };
 
-DBCore.prototype.getOne = function (optRowPosition) {
+DBCore.prototype.getOne = function (rowPosition) {
     if (this._range === null) return null;
-    return this._range.getValues()[optRowPosition - 1];
+    return this._range.getValues()[rowPosition - 1];
 };
 
 
