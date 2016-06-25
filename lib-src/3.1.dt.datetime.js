@@ -36,10 +36,12 @@ DateTool.getDaysInMonth = function (year, month) {
 };
 
 DateTool.prototype.isLeapYear = function () {
+    if (! this._date) return null;
     return DateTool.isLeapYear(this._date.getFullYear());
 };
 
 DateTool.prototype.getDaysInMonth = function () {
+    if (! this._date) return null;
     return DateTool.getDaysInMonth(this._date.getFullYear(), this._date.getMonth());
 };
 
@@ -57,6 +59,7 @@ DateTool.prototype.add = function (what, delta) {
 DateTool.prototype.addMonths = function (deltaMonths) {
     var t = this;
     var d = t._date;
+    if (! d) return t;
     var n = d.getDate();
     d.setDate(1);
     d.setMonth(d.getMonth() + deltaMonths);
@@ -81,17 +84,33 @@ function getDate(strOrDate, defaultTZ) {
         date = strOrDate;
         if (date._convertedTZ) return date;
     } else if (typeof strOrDate === 'string') {
-        var regexp = /^([0-9]{4})-([0-9]{2})-([0-9]{2})[T ]([0-9]{2}):([0-9]{2})(?::([0-9]{2}))?(?:([+-])([0-9]{2}):([0-9]{2}))?.*/;
+        var regexp = /^([0-9]{4})-([0-9]{2})-([0-9]{2})(?:[T ]([0-9]{2}):([0-9]{2})(?::([0-9]{2}))?)?(?:([+-])([0-9]{2}):([0-9]{2}))?.*/;
         var d = regexp.exec(strOrDate);
-
-        date = new Date(parseInt(d[1]),
-            parseInt(d[2]) - 1,
-            parseInt(d[3]),
-            parseInt(d[4]),
-            parseInt(d[5]),
-            parseInt(d[6]),
+        //Warning: parseInt did not work by some reason!
+        date = new Date(d[1],
+            d[2] - 1,
+            d[3],
+            d[4] || 0,
+            d[5] || 0,
+            d[6] || 0,
             0);
-
+        if (isNaN( date.getTime() )) {
+            //this is some very terrible bug in the Apps Script
+            Logger.log("Invalid date 1: " + JSON.stringify(d));
+            date = new Date();
+            date.setFullYear(d[1]);
+            date.setMonth(d[2] - 1);
+            date.setDate(d[3]);
+            if (d[4]) date.setHours(d[4]);
+            if (d[5]) date.setMinutes(d[5]);
+            if (d[6]) date.setSeconds(d[6]);
+            date.setMilliseconds(0);
+            
+            if (isNaN( date.getTime())){
+                Logger.log("Invalid date 1 again");
+                return null;
+            }
+        }
         //respect original timezone
         //we need to negate the sign to get the same literal date but in custom timezone
         if (d[7]) {
@@ -107,6 +126,10 @@ function getDate(strOrDate, defaultTZ) {
     var time = date.getTime() + (offset * 60 * 1000);
 
     var newd = new Date(time);
+    if (isNaN( newd.getTime() )) {
+        Logger.log("Invalid date 2: " + String(time));
+        return null;
+    }
     newd._convertedTZ = true;
     return newd;     
 }
@@ -118,13 +141,14 @@ DateTool.prototype._parse = function (date, zeroTime) {
 
     d = getDate(date, t._options.timezone.offset);
     
-    if (zeroTime) d.setHours(0, 0, 0, 0);
+    if (d && zeroTime) d.setHours(0, 0, 0, 0);
     
     return d;
 };
 
 DateTool.prototype.addDays = function (deltaDays) {
     var t = this;
+    if (! t._date) return t;
     var d = new Date();
     d.setDate(t._date.getDate() + deltaDays);
     t._date = d;
@@ -134,6 +158,7 @@ DateTool.prototype.addDays = function (deltaDays) {
 DateTool.prototype.print = function (format, timezone) {
 
     var t = this;
+    if (! t._date) return 'INVALID';
 
     return Utilities.formatDate(
         t._date,
