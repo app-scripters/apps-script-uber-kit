@@ -4,8 +4,8 @@
 function DateTool(options) {
     var t = this;
     t._options = {
-        timezone: 'GMT',
-        format: "MM/dd/yyyy"
+        timezone: {offset: 0, name: 'GMT'},
+        format: "yyyy-MM-dd"
     };
     Lib.util.extend(t._options, options);
     //this is a snapshort of the last settings before modification with options method
@@ -19,7 +19,7 @@ DateTool.prototype.options = function (options) {
 };
 
 DateTool.prototype.set = function (date, zeroTime) {
-    this._date = DateTool._parse(date, zeroTime);
+    this._date = this._parse(date, zeroTime);
     return this;
 };
 
@@ -64,14 +64,62 @@ DateTool.prototype.addMonths = function (deltaMonths) {
     return t;
 };
 
-DateTool._parse = function (date, zeroTime) {
-    if (!date) {
-        date = new Date();
+/**
+ * This function assumes your data objects is automatically created in local time zone
+ *
+ * @returns {*}
+ * @param strOrDate
+ * @param defaultTZ
+ */
+function getDate(strOrDate, defaultTZ) {
+    var date;
+    var offset = - parseInt(defaultTZ) * 60;  //default tz offset
+    
+    if (! strOrDate) strOrDate = new Date();
+
+    if (typeof strOrDate === 'object') {
+        date = strOrDate;
+        if (date._convertedTZ) return date;
+    } else if (typeof strOrDate === 'string') {
+        var regexp = /^([0-9]{4})-([0-9]{2})-([0-9]{2})[T ]([0-9]{2}):([0-9]{2})(?::([0-9]{2}))?(?:([+-])([0-9]{2}):([0-9]{2}))?.*/;
+        var d = regexp.exec(strOrDate);
+
+        date = new Date(parseInt(d[1]),
+            parseInt(d[2]) - 1,
+            parseInt(d[3]),
+            parseInt(d[4]),
+            parseInt(d[5]),
+            parseInt(d[6]),
+            0);
+
+        //respect original timezone
+        //we need to negate the sign to get the same literal date but in custom timezone
+        if (d[7]) {
+            offset = ((parseInt(d[8]) * 60) + parseInt(d[9])) *
+                ((d[7] === '-') ? 1 : -1);
+        }
+    } else {
+        throw Error("DateTool._parse: only date objects and strings are supported");
     }
-    var d = date instanceof Date ? 
-        date : 
-        new Date(String(date) + " " + this._options.timezone);
+
+    offset -= date.getTimezoneOffset();  //to make the created date to be UTC
+
+    var time = date.getTime() + (offset * 60 * 1000);
+
+    var newd = new Date(time);
+    newd._convertedTZ = true;
+    return newd;     
+}
+
+
+DateTool.prototype._parse = function (date, zeroTime) {
+    var t = this;
+    var d;
+
+    d = getDate(date, t._options.timezone.offset);
+    
     if (zeroTime) d.setHours(0, 0, 0, 0);
+    
     return d;
 };
 
@@ -89,12 +137,12 @@ DateTool.prototype.print = function (format, timezone) {
 
     return Utilities.formatDate(
         t._date,
-        timezone || t._options.timezone,
+        timezone || t._options.timezone.name,
         format || t._options.format)
 };
 
 
-DateTool.delta = function (start, end, what) {
+DateTool.prototype.delta = function (start, end, what) {
     var t = this;
     var delta = {}, measurements = {
         week: 604800000,
@@ -104,8 +152,8 @@ DateTool.delta = function (start, end, what) {
         second: 1000
     };
 
-    start = DateTool._parse(start);
-    end =  DateTool._parse(end);
+    start = t._parse(start);
+    end =  t._parse(end);
 
     var ms = Math.abs(end.getTime() - start.getTime());
 
