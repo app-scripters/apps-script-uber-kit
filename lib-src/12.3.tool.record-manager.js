@@ -22,11 +22,12 @@ RecordManager.prototype._mapNames = function () {
 };
 
 RecordManager.prototype._prepareData = function(data){
-    return (data && typeof data === "object") ? JSON.stringify(data) : data;
+    return (data && typeof data === "object") ? ('#JSON#:' + JSON.stringify(data)) : data;
 };
 
 RecordManager.prototype._extractData = function(data){
-    return (typeof data === "string" && data[0] in {'{':0 , '[':0}) ? JSON.parse(data) : data;
+    return (typeof data === "string" && data.indexOf('#JSON#:') === 0) ? 
+        JSON.parse(data.replace('#JSON#:', '')) : data;
 };
 
 
