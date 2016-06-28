@@ -9,7 +9,7 @@ module.exports = {
     // - they are treated as global header definitions
     modules: {
         //this is an array of patterns of what to be included from vendor-src
-        external: ['*'],
+        vendor: ['*'],
         //what to be included from src
         library: ['0.*', '1.*', '2.*', '19.*'],
         //what to be included from this app source folder (appmname/app)
