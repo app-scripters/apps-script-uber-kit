@@ -20,7 +20,7 @@ var knownOptions = {
 
 var options = minimist(process.argv.slice(2), knownOptions);
 
-const srcExternal = 'vendor-src';
+const srcVendor = 'vendor-src';
 const srcLib = 'lib-src';
 const srcLibPostfix = 'lib-postfix-src';
 const exampleAppSrcBase = './example-apps/src';
@@ -45,7 +45,7 @@ if (options.app) {
 
 var mods = require(appPath + '/config').modules;
 
-var vendorFiles = constructSources(mods.external, [srcExternal]);
+var vendorFiles = constructSources(mods.vendor, [srcVendor]);
 var libFiles = constructSources(mods.library, [srcLib]);
 var appServerGsFiles = constructSources(mods.app, [appPath + '/server/gs', srcLibPostfix]);
 var appServerTemplateFiles = constructSources(mods.app, [appPath + '/server/template']);
