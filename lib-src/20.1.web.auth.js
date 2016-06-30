@@ -1,7 +1,7 @@
-function Auth(confInstance){
+function Auth(roles){
     var t = this;
     t._runningUser = Session.getActiveUser().getEmail();
-    t._params = confInstance;
+    t._roles = roles;
 }
 
 Auth.prototype.getEmail = function () {
@@ -11,24 +11,34 @@ Auth.prototype.getEmail = function () {
 Auth.prototype.validate = function (userEmail) {
     var t = this;
     
-    var emailToCheck = userEmail ? userEmail : t._runningUser;
+    var emailToCheck = (userEmail ? userEmail : t._runningUser).toLowerCase();
+    var domainToCheck = emailToCheck.replace(/.*@/, '*@');
     
-    //just need to check if user has access at all (is in ALL group)
-    return t._params.role[CONSTANTS.ROLE_ALL].indexOf(emailToCheck) !== -1;
-
+    var emails = t._roles.ALL.trim().toLowerCase();
+    
+    return emails === 'all' || 
+        emails.indexOf(domainToCheck) !== -1 || 
+        emails.indexOf(emailToCheck) !== -1; 
 };   
 
 Auth.prototype.validateRole = function (page, userEmail) {
     var t = this;
     
-    var emailToCheck = userEmail ? userEmail : t._runningUser;
-    
+    var prefix = page.getPrefix().toLowerCase();
+    var roles = t._roles.group;
+    var emailToCheck = (userEmail ? userEmail : t._runningUser).toLowerCase();
+    var domainToCheck = emailToCheck.replace(/.*@/, '*@');
     //need to check permissions to this specific page
     //return after having found the first role permitting this page
-    for (var role in CONSTANTS.ROLE) {
-        //log('role', role);
-        if (t._params.role[role].indexOf(emailToCheck) !== -1 &&
-            CONSTANTS.ROLE[role].allowedPrefixes.indexOf(page.getPrefix()) !== -1 
+    for (var roleName in roles) {
+        var role = roles[roleName];
+
+        var emails = role.emails.trim().toLowerCase();
+
+        var modules = role.modules.trim().toLowerCase();
+
+        if ((emails === 'all' || emails.indexOf(domainToCheck) !== -1 || emails.indexOf(emailToCheck) !== -1) &&
+            modules.indexOf(prefix) !== -1 
         ){
             return true;
         }

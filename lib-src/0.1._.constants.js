@@ -14,20 +14,6 @@ var CONSTANTS = {
         ITEMS_SPLITTER_POSITION: 3,
         PARAM_VALUE_POSITION: 5,
         PARAM_ROWS_STARTS_FROM: 5
-    },
-    
-    ROLE_ALL: 'ALL',
-    
-    ROLE:{
-        admin: {
-            name: 'admin',
-            allowedPrefixes: ['admin','service','app']
-        },
-        staff:{
-            name:'staff',
-            allowedPrefixes: ['service','app']
-        },
     }
-    //TRIGGER_CALL_INTERVAL: 60 * 1000,
 };
 

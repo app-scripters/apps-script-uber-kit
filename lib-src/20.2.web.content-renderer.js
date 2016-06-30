@@ -18,8 +18,7 @@ ContentRenderer.prototype.render = function (data, error){
 
 ContentRenderer.prototype.systemError = function (exception) {
     var t = this;
-    var tr = Lib.trace(exception);
-    Logger.log(tr);
+    var tr = Lib.util.trace(exception);
     var message = DEBUG ? tr.replace(/\n/g, '   ===>   ') : String(exception);
     var error = {
         error: "System error",

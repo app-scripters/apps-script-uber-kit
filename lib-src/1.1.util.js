@@ -1,29 +1,31 @@
-Lib.util.stub = function () {
+var U = Lib.util;
+
+U.stub = function () {
     return null;
 };
 
-Lib.util.uuid = function () {
+U.uuid = function () {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
     });
 };
 
-Lib.util.isObject = _.isObject;
+U.isObject = _.isObject;
 
-Lib.util.yes = function (s) {
+U.yes = function (s) {
     return String(s).toLowerCase().trim()[0] in {'y':0, 't':0}; //Yes, True
 };
 
-Lib.util.escapeRegExp = function (str) {
+U.escapeRegExp = function (str) {
     return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 };
 
-Lib.util.makeRegex = function (pre, text, post) {
+U.makeRegex = function (pre, text, post) {
     return new RegExp(pre + escapeRegExp(text) + post);
 };
 
-Lib.util.makeUrlParams = function (obj) {
+U.makeUrlParams = function (obj) {
     if (! obj) return '';
     var str = [];
     for (var p in obj) {
@@ -34,7 +36,7 @@ Lib.util.makeUrlParams = function (obj) {
     return str.length ? ('?' + str.join("&")) : '';
 };
 
-Lib.util.log = function (msg, data) {
+U.log = function (msg, data) {
     if (data) {
         Logger.log("\n\n" + msg + " ===> " + JSON.stringify(data) + "\n\n");
     } else {
@@ -42,11 +44,12 @@ Lib.util.log = function (msg, data) {
     }
 };
 
-Lib.util.trace = function (err) {
+U.trace = function (err, skipLog) {
     var errInfo = "\n";
     for (var prop in err) {
         errInfo += prop + ": " + err[prop] + "\n";
     }
+    if (! skipLog) U.log('TRACE: ' + errInfo);
     return errInfo;
 };
 
@@ -54,7 +57,7 @@ Lib.util.trace = function (err) {
  * Extends or overwrites
  * @returns {*|{}}
  */
-Lib.util.extend = _.extend;
+U.extend = _.extend;
 
 /**
  * Like _.defaults, with different signature
@@ -62,7 +65,7 @@ Lib.util.extend = _.extend;
  * @param dictArray - to be merged without overwrites
  * @returns {*}
  */
-Lib.util.unite = function (destination, dictArray) {
+U.unite = function (destination, dictArray) {
     for (var i = 0; i < dictArray.length; i++) {
         var source = dictArray[i];
         if (source) {
@@ -76,14 +79,14 @@ Lib.util.unite = function (destination, dictArray) {
     return destination;
 };
 
-Lib.util.makeFilledArray = function(length, value){
+U.makeFilledArray = function(length, value){
     if (length < 1) return [];
     const arr = new Array(length).join('|' +  (value || '')).split('|');
     if (value) arr[0] = value;
     return arr;
 };
 
-Lib.util.columnToLetter = function (column) {
+U.columnToLetter = function (column) {
     if (typeof column === "string") return column;
 
     var temp, letter = '';
@@ -96,7 +99,7 @@ Lib.util.columnToLetter = function (column) {
 };
 
 
-Lib.util.letterToColumn = function (letter) {
+U.letterToColumn = function (letter) {
     var num = parseInt(letter);
     if (!isNaN(num)) return num;
 
@@ -107,7 +110,7 @@ Lib.util.letterToColumn = function (letter) {
     return column;
 };
 
-Lib.util.getRange = function(sheet, startRC, howManyRC) {
+U.getRange = function(sheet, startRC, howManyRC) {
     var row_num = sheet.getLastRow() - startRC[0] + 1;
     var column_num = sheet.getLastColumn() - startRC[1] + 1;
     if (row_num < 1 || column_num < 1) return null;
@@ -118,7 +121,7 @@ Lib.util.getRange = function(sheet, startRC, howManyRC) {
 };
 
 
-Lib.util.appendCell = function(sheet, data, start_c) {
+U.appendCell = function(sheet, data, start_c) {
     var max_rows = sheet.getMaxRows();
     var last_row = sheet.getLastRow();
     if (max_rows - last_row === 0) {
@@ -129,7 +132,7 @@ Lib.util.appendCell = function(sheet, data, start_c) {
 };
 
 
-Lib.util.writeRows = function(sheet, data, optStartColumn, columnNameToScanForEndORLastRow, numberOfRowsToExtend) {
+U.writeRows = function(sheet, data, optStartColumn, columnNameToScanForEndORLastRow, numberOfRowsToExtend) {
     var o = {done: false};
     var max_rows = sheet.getMaxRows();
     var last_row = 1;
@@ -165,8 +168,8 @@ Lib.util.writeRows = function(sheet, data, optStartColumn, columnNameToScanForEn
 };
 
 
-Lib.util.getColumn = function (values, numberOrLetter, from) {
-    var index = Lib.util.letterToColumn(numberOrLetter) - 1;
+U.getColumn = function (values, numberOrLetter, from) {
+    var index = U.letterToColumn(numberOrLetter) - 1;
     var res = [];
     for (var i = (from || 0); i < values.length; i++) {
         res.push(values[i][index]);
