@@ -1,7 +1,6 @@
 
-function Renderer(appTitle, rootTemplate){
+function Renderer(rootTemplate){
     var t = this;
-    t._appTitle = appTitle;
     t._plainTemplates = {};
     t._rootTemplate = rootTemplate || "index";
     //root context, is applied to all templates before other contexts when rendering
@@ -10,7 +9,7 @@ function Renderer(appTitle, rootTemplate){
     t._baseTemplate = HtmlService.createTemplateFromFile(t._rootTemplate);
 }
 
-Renderer.prototype.plainTemplates = function (plainTemplates) {
+Renderer.prototype.setPlainTemplates = function (plainTemplates) {
     this._plainTemplates = plainTemplates;
     return this;
 };
@@ -56,7 +55,7 @@ Renderer.prototype._render = function (inheritFromRoot, templateName, pageContex
     
     // Build and return HTML in IFRAME sandbox mode.
     return template.evaluate()
-        .setTitle(t._appTitle)
+        .setTitle(t._context.title || 'Web App')
         .setSandboxMode(HtmlService.SandboxMode.IFRAME);
     
 };

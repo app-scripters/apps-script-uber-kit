@@ -1,9 +1,11 @@
-function Page(urlParameters, defaultPage) {
+function Page(options) {
     var t = this;
+    options = options || {};
     t._url = ScriptApp.getService().getUrl();
     t._valid = null;
-    t._urlPar = urlParameters;
-    t._defaultPageName = defaultPage;
+    t._urlPar = options.parameters || {};
+    t._defaultPageName = options.defaultPage || 'index';
+    t._controllers = options.controllers || 'index';
     t._pageName = (t._urlPar.page || '').toString().replace(/^\//, '');
 
     if (t._pageName === ''){
@@ -54,28 +56,32 @@ Page.prototype.getPrefix = function () {
 };
 
 Page.prototype.runController = function(conf) {
-    var page = this;
-    var pageName = page.getName();
+    var t = this;
+    var pageName = t.getName();
     //this is also default template file name (without extension)
-    var actionName = page.getActionName(); 
-    if(! (pageName in controllers)){
-        pageName = controllers.defaultController;
+    var actionName = t.getActionName(); 
+    if(! (pageName in t._controllers)){
+        pageName = t._controllers.defaultController;
     }
     
     //pick up a controller
-    var data = (controllers[pageName] || 
-                controllers.defaultController)(conf, page, actionName);
+    var data = (t._controllers[pageName] || 
+                t._controllers.defaultController)(conf, t, actionName);
     
     if (!data.template) data.template = actionName;
     if (! data.context) data.context = {};
     
     //page always should be in the context
-    data.context.page = page; 
+    data.context.page = t; 
     data.context.conf = conf; 
     
     return data;
 };
 
 
+Page.prototype.isMe = function (actionName, textOnSuccess) {
+    var res = actionName === this.getActionName();
+    return textOnSuccess ? (res ? textOnSuccess : '') : res;
+};
 
 Lib.web.Page = Page;
