@@ -16,7 +16,7 @@ Renderer.prototype.plainTemplates = function (plainTemplates) {
 };
 
 Renderer.prototype.setContext = function (name, data) {
-    this._contextName = data;
+    this._contextName = name;
     this._context = data;
     return this;
 };
