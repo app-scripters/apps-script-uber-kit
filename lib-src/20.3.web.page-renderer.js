@@ -2,11 +2,11 @@
 function Renderer(rootTemplate){
     var t = this;
     t._plainTemplates = {};
-    t._rootTemplate = rootTemplate || "index";
     //root context, is applied to all templates before other contexts when rendering
     t._context = {};
-    t._contextName = 'context';
-    t._baseTemplate = HtmlService.createTemplateFromFile(t._rootTemplate);
+    t._baseTemplate = rootTemplate ? 
+        HtmlService.createTemplateFromFile(rootTemplate) :
+        null; //will work for system error rendering
 }
 
 Renderer.prototype.setPlainTemplates = function (plainTemplates) {
@@ -14,8 +14,7 @@ Renderer.prototype.setPlainTemplates = function (plainTemplates) {
     return this;
 };
 
-Renderer.prototype.setContext = function (name, data) {
-    this._contextName = name;
+Renderer.prototype.setContext = function (data) {
     this._context = data;
     return this;
 };
@@ -28,21 +27,31 @@ Renderer.prototype.render = function (templateName, pageContext) {
     return this._render(true, templateName, pageContext);
 };
 
+function makeTemplate(templateName, plainTemplates){
+    var template, plainTemplate = plainTemplates[templateName];
+    if (plainTemplate){
+        template = HtmlService.createTemplate(plainTemplate);
+    }else{
+        template = HtmlService.createTemplateFromFile(templateName);
+    }
+    return template;
+}
+
 Renderer.prototype._render = function (inheritFromRoot, templateName, pageContext){
     var t = this;
     
-    var plainTemplate = t._plainTemplates[templateName];
+    if (! t._baseTemplate) throw Error("Base Template should be present for regular render");
     
-    var viewTemplate = HtmlService['createTemplate' + (plainTemplate ? '' : 'FromFile')](templateName);
+    var viewTemplate = makeTemplate(templateName, t._plainTemplates);
     
     var currentContext = Lib.util.extend({}, t._context, pageContext);
     
-    viewTemplate[t._contextName] = currentContext;
+    Lib.util.extend(viewTemplate, currentContext);
     
     var template;
     if (inheritFromRoot){
         //root template should update its current context too
-        t._baseTemplate[t._contextName] = currentContext;
+        Lib.util.extend(t._baseTemplate, currentContext);
 
         //now, render our view template into the base with bounded context
         t._baseTemplate.viewContent = 
@@ -60,8 +69,9 @@ Renderer.prototype._render = function (inheritFromRoot, templateName, pageContex
     
 };
 
-Renderer.renderError = function(templateName, exception) {
-    var template = HtmlService.createTemplateFromFile(templateName);
+Renderer.prototype.renderError = function(templateName, exception) {
+    var t = this;
+    var template = makeTemplate(templateName, t._plainTemplates);
     template.exception = exception;
     return template.evaluate()
         .setTitle('Error')

@@ -16,7 +16,7 @@ function Page(options) {
     //it remais such. Use isValid() to validate
     t._path = t._pageName.split('/');
     
-    t._templateName = t._pageName.replace(/\//g, '_');
+    t._actionName = t._pageName.replace(/\//g, '_');
 }
 
 Page.prototype.getParameters = function () {
@@ -47,8 +47,8 @@ Page.prototype.getName = function () {
     return this._pageName;
 };
 
-Page.prototype.getActionName = function () {
-    return this._templateName;
+Page.prototype.getAction = function () {
+    return this._actionName;
 };
 
 Page.prototype.getPrefix = function () {
@@ -59,7 +59,7 @@ Page.prototype.runController = function(conf) {
     var t = this;
     var pageName = t.getName();
     //this is also default template file name (without extension)
-    var actionName = t.getActionName(); 
+    var actionName = t.getAction(); 
     if(! (pageName in t._controllers)){
         pageName = t._controllers.defaultController;
     }
@@ -78,10 +78,5 @@ Page.prototype.runController = function(conf) {
     return data;
 };
 
-
-Page.prototype.isMe = function (actionName, textOnSuccess) {
-    var res = actionName === this.getActionName();
-    return textOnSuccess ? (res ? textOnSuccess : '') : res;
-};
 
 Lib.web.Page = Page;
