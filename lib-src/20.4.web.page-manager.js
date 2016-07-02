@@ -77,14 +77,15 @@ function Page(nameOrAction, defaultPage, url, manager) {
     t._actionName = t._pageName.replace(/\//g, '_');
 }
 
+Page._validationPattern = /^[\-\w]+\/[\-\w]+(\/[\-\w]+)*$/;
 
 Page.prototype.isValid = function () {
-    return /^[\-\w]+\/[\-\w]+(\/[\-\w]+)*$/.test(this._pageName)
+    return Page._validationPattern.test(this._pageName)
 };
 
 Page.prototype.actionToName = function (action) {
     return action.replace(/_/g, '/');
-}
+};
 /**
  * Gets URL of the  other page
  * @param templateName - other page name or action, or empty for default page
