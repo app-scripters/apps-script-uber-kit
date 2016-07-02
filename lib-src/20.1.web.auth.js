@@ -1,6 +1,6 @@
 function Auth(roles){
     var t = this;
-    t._runningUser = Session.getActiveUser().getEmail();
+    t._runningUser = String(Session.getActiveUser().getEmail()).toLowerCase().trim();
     t._roles = roles;
 }
 
