@@ -42,7 +42,7 @@ PageManager.prototype.runController = function(page, extraContext) {
     
     if (! data.template) data.template = actionName;
     if (! data.context) data.context = {};
-    if (t._rootExtraContext) _.extend(data.context, t._rootExtraContext, data.context);
+    if (t._rootExtraContext) data.context = _.extend({}, t._rootExtraContext, data.context);
     if (extraContext) _.extend(data.context, extraContext);
     
     //page always should be in the context
