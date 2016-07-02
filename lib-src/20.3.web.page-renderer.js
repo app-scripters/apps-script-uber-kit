@@ -14,7 +14,7 @@ Renderer.prototype.setPlainTemplates = function (plainTemplates) {
     return this;
 };
 
-Renderer.prototype.setContext = function (data) {
+Renderer.prototype.setBaseContext = function (data) {
     this._context = data;
     return this;
 };
@@ -42,6 +42,10 @@ Renderer.prototype._render = function (inheritFromRoot, templateName, pageContex
     
     if (! t._baseTemplate) throw Error("Base Template should be present for regular render");
     
+    if (_.isObject(templateName)) {
+        pageContext = templateName.context;
+        templateName = templateName.template;
+    }
     var viewTemplate = makeTemplate(templateName, t._plainTemplates);
     
     var currentContext = Lib.util.extend({}, t._context, pageContext);
@@ -64,7 +68,7 @@ Renderer.prototype._render = function (inheritFromRoot, templateName, pageContex
     
     // Build and return HTML in IFRAME sandbox mode.
     return template.evaluate()
-        .setTitle(t._context.title || 'Web App')
+        .setTitle(t._context.appTitle || 'Web App')
         .setSandboxMode(HtmlService.SandboxMode.IFRAME);
     
 };

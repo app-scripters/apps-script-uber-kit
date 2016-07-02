@@ -24,7 +24,7 @@ Auth.prototype.validate = function (userEmail) {
 Auth.prototype.validateRole = function (page, userEmail) {
     var t = this;
     
-    var prefix = page.getPrefix().toLowerCase();
+    var prefix = page.getModule().toLowerCase();
     var roles = t._roles.group;
     var emailToCheck = (userEmail ? userEmail : t._runningUser).toLowerCase();
     var domainToCheck = emailToCheck.replace(/.*@/, '*@');
