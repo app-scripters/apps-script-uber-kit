@@ -24,7 +24,7 @@ Auth.prototype.validate = function (userEmail) {
 Auth.prototype.validateRole = function (page, userEmail) {
     var t = this;
     
-    var prefix = page.getModule().toLowerCase();
+    var pageModule = page.getModule().toLowerCase();
     var roles = t._roles.group;
     var emailToCheck = (userEmail ? userEmail : t._runningUser).toLowerCase();
     var domainToCheck = emailToCheck.replace(/.*@/, '*@');
@@ -37,9 +37,14 @@ Auth.prototype.validateRole = function (page, userEmail) {
 
         var modules = role.modules.trim().toLowerCase();
 
-        if ((emails === 'all' || emails.indexOf(domainToCheck) !== -1 || emails.indexOf(emailToCheck) !== -1) &&
-            modules.indexOf(prefix) !== -1 
-        ){
+        if ((
+                emails === 'all' ||
+                emails.indexOf(domainToCheck) !== -1 || 
+                emails.indexOf(emailToCheck) !== -1
+            ) && (
+                modules === 'all'  || 
+                modules.indexOf(pageModule) !== -1
+        )){
             return true;
         }
     }
