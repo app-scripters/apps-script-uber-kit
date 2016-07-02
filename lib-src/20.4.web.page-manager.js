@@ -79,7 +79,7 @@ function Page(nameOrAction, defaultPage, url, manager) {
 
 
 Page.prototype.isValid = function () {
-    return /^[\-\w]+\\[\-\w\\]+$/.test(this._pageName)
+    return /^[\-\w]+\/[\-\w]+(\/[\-\w]+)*$/.test(this._pageName)
 };
 
 Page.prototype.actionToName = function (action) {
@@ -117,7 +117,7 @@ Page.prototype.getModule = function () {
 
 Page.prototype.runController = function (context) {
     var t = this;
-    t._manager.runController(t, context)
+    return t._manager.runController(t, context)
 };
 
 Lib.web.PageManager = PageManager;
