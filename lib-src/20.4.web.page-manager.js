@@ -7,9 +7,14 @@ function PageManager(options){
     t._conf = options.conf || {};
     t._defaultPageName = options.defaultPage || (err = '"defaultPage" is the obligatory option');
     t._controllers = options.controllers || (err = '"controllers" is the obligatory option');
-    t._rootExtraContext = options.context || null;
+    t._rootExtraContext = null;
     if (err) throw Error(err);
 }
+
+PageManager.prototype.setContext = function(context){
+    this._rootExtraContext = context;
+    return this;
+};
 
 PageManager.getRootUrl = function () { 
     return ScriptApp.getService().getUrl(); 
