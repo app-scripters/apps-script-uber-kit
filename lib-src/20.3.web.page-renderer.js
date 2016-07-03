@@ -1,21 +1,21 @@
 
-function Renderer(rootTemplate){
+function Renderer(rootTemplate, plainTemplates){
     var t = this;
-    t._plainTemplates = {};
     //root context, is applied to all templates before other contexts when rendering
     t._context = {};
     t._baseTemplate = rootTemplate ? 
         HtmlService.createTemplateFromFile(rootTemplate) :
         null; //will work for system error rendering
+    t._plainTemplates = plainTemplates || {};
 }
-
-Renderer.prototype.setPlainTemplates = function (plainTemplates) {
-    this._plainTemplates = plainTemplates;
-    return this;
-};
 
 Renderer.prototype.setContext = function (data) {
     this._context = data;
+    return this;
+};
+
+Renderer.prototype.setViewport = function (data) {
+    this._viewport = data;
     return this;
 };
 
@@ -67,19 +67,28 @@ Renderer.prototype._render = function (inheritFromRoot, templateName, pageContex
     }
     
     // Build and return HTML in IFRAME sandbox mode.
-    return template.evaluate()
+    return t._addViewport(template.evaluate()
         .setTitle(t._context.appTitle || 'Web App')
-        .setSandboxMode(HtmlService.SandboxMode.IFRAME);
+        .setSandboxMode(HtmlService.SandboxMode.IFRAME)
+    );
     
+};
+
+Renderer.prototype._addViewport = function(htmlOutput) {
+    var t = this;
+    return t._viewport ? 
+        htmlOutput.addMetaTag('viewport', t._viewport) :
+        htmlOutput
 };
 
 Renderer.prototype.renderError = function(templateName, exception) {
     var t = this;
     var template = makeTemplate(templateName, t._plainTemplates);
     template.exception = exception;
-    return template.evaluate()
+    return t._addViewport(template.evaluate()
         .setTitle('Error')
-        .setSandboxMode(HtmlService.SandboxMode.IFRAME);
+        .setSandboxMode(HtmlService.SandboxMode.IFRAME)
+    );
 };
 
 Lib.web.Renderer = Renderer;
