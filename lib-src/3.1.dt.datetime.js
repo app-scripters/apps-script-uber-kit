@@ -4,17 +4,27 @@
 function DateTool(options) {
     var t = this;
     t._options = {
-        timezone: {offset: 0, name: 'GMT'},
+        timezone: 'GMT',
         format: "yyyy-MM-dd"
     };
-    Lib.util.extend(t._options, options);
+
+    t.options(options);
+    
     //this is a snapshort of the last settings before modification with options method
     //it i used to quiqly restore original settings, posted to DateManager
     t._checkpoint = Lib.util.extend({}, t._options);  //protect the checkpoint from modification
 }
 
+DateTool.prototype._recalculate = function () {
+    this._tzOffset = - 60 * Number(
+        //a hack to determine proper offset from the tz name
+        Utilities.formatDate(new Date(), this._options.timezone, "X")
+    );
+};
+
 DateTool.prototype.options = function (options) {
     Lib.util.extend(this._options, options);
+    this._recalculate();
     return this;
 };
 
@@ -25,6 +35,8 @@ DateTool.prototype.set = function (date, zeroTime) {
 
 DateTool.prototype.resetOptions = function () {
     this._options = Lib.util.extend({}, this._checkpoint); //protect the checkpoint from modification
+    this._recalculate();
+    return this;
 };
 
 DateTool.isLeapYear = function (year) {
@@ -68,70 +80,83 @@ DateTool.prototype.addMonths = function (deltaMonths) {
 };
 
 /**
- * This function assumes your data objects is automatically created in local time zone
- *
+ * Converts a string to Date, respects timezone if present on the string,
+ * if not - treats the date to be in the defaultTZOffset timezone (ex: 2015-06-09)
+ * @param string
+ * @param defaultTZOffset
  * @returns {*}
- * @param strOrDate
- * @param defaultTZ
  */
-function getDate(strOrDate, defaultTZ) {
-    var date;
-    var offset = - parseInt(defaultTZ) * 60;  //default tz offset
-    
-    if (! strOrDate) strOrDate = new Date();
+function getDateFromIso(string, defaultTZOffset) {
+    try {
+        var aDate = new Date();
+        var regexp = "([0-9]{4})(-([0-9]{2})(-([0-9]{2})" +
+            "((?:T| )([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?" +
+            "(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?";
+        var d = string.match(new RegExp(regexp));
 
-    if (typeof strOrDate === 'object') {
-        date = strOrDate;
-        if (date._convertedTZ) return date;
-    } else if (typeof strOrDate === 'string') {
-        var regexp = /^([0-9]{4})-([0-9]{2})-([0-9]{2})(?:[T ]([0-9]{2}):([0-9]{2})(?::([0-9]{2}))?)?(?:([+-])([0-9]{2}):([0-9]{2}))?.*/;
-        var d = regexp.exec(strOrDate);
-        //Warning: parseInt did not work by some reason!
-        date = new Date(d[1],
-            d[2] - 1,
-            d[3],
-            d[4] || 0,
-            d[5] || 0,
-            d[6] || 0,
-            0);
+        var offset = 0;
+        var date = new Date(d[1], 0, 1);
+
+        if (d[3]) {
+            date.setMonth(d[3] - 1);
+        }
+        if (d[5]) {
+            date.setDate(d[5]);
+        }
+        if (d[7]) {
+            date.setHours(d[7]);
+        }
+        if (d[8]) {
+            date.setMinutes(d[8]);
+        }
+        if (d[10]) {
+            date.setSeconds(d[10]);
+        }
+        if (d[12]) {
+            date.setMilliseconds(Number("0." + d[12]) * 1000);
+        }
+        
+        if (d[14]) {
+            offset = (Number(d[16]) * 60) + Number(d[17]);
+            offset *= ((d[15] == '-') ? 1 : -1);
+        }else{
+            offset = defaultTZOffset
+        }
+        
         if (isNaN( date.getTime() )) {
             //this is some very terrible bug in the Apps Script
-            Logger.log("Invalid date 1: " + JSON.stringify(d));
-            date = new Date();
-            date.setFullYear(d[1]);
-            date.setMonth(d[2] - 1);
-            date.setDate(d[3]);
-            if (d[4]) date.setHours(d[4]);
-            if (d[5]) date.setMinutes(d[5]);
-            if (d[6]) date.setSeconds(d[6]);
-            date.setMilliseconds(0);
-            
-            if (isNaN( date.getTime())){
-                Logger.log("Invalid date 1 again");
-                return null;
-            }
+            Logger.log("Invalid date: " + JSON.stringify(d));
+            return null;
         }
-        //respect original timezone
-        //we need to negate the sign to get the same literal date but in custom timezone
-        if (d[7]) {
-            offset = ((parseInt(d[8]) * 60) + parseInt(d[9])) *
-                ((d[7] === '-') ? 1 : -1);
-        }
+        
+        offset -= date.getTimezoneOffset();
+        var time = (Number(date) + (offset * 60 * 1000));
+        aDate.setTime(Number(time));
+        return aDate;
+    } catch (e) {
+        Logger.log(e);
+        throw Error("getDateFromISO: " + e.message);
+    }
+}
+
+/**
+ * Converts strings to dates, creates new Date() for empty, 
+ * idempotent for Date objects
+ *
+ * @returns {*}
+ * @param date
+ * @param targetTZOffset
+ */
+function getDate(date, targetTZOffset) {
+    if (! date) return new Date(); //now time, no timezone needed
+
+    if (typeof date === 'object') {
+        return date;
+    } else if (typeof date === 'string') {
+        return getDateFromIso(date, targetTZOffset)
     } else {
         throw Error("DateTool._parse: only date objects and strings are supported");
     }
-
-    offset -= date.getTimezoneOffset();  //to make the created date to be UTC
-
-    var time = date.getTime() + (offset * 60 * 1000);
-
-    var newd = new Date(time);
-    if (isNaN( newd.getTime() )) {
-        Logger.log("Invalid date 2: " + String(time));
-        return null;
-    }
-    newd._convertedTZ = true;
-    return newd;     
 }
 
 
@@ -139,7 +164,7 @@ DateTool.prototype._parse = function (date, zeroTime) {
     var t = this;
     var d;
 
-    d = getDate(date, t._options.timezone.offset);
+    d = getDate(date, t._tzOffset);
     
     if (d && zeroTime) d.setHours(0, 0, 0, 0);
     
@@ -162,7 +187,7 @@ DateTool.prototype.print = function (format, timezone) {
 
     return Utilities.formatDate(
         t._date,
-        timezone || t._options.timezone.name,
+        timezone || t._options.timezone,
         format || t._options.format)
 };
 
@@ -185,5 +210,9 @@ DateTool.prototype.delta = function (start, end, what) {
     return Math.floor(ms / measurements[what]);
 };
 
+
+DateTool.prototype.format = {
+    ISO: "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
+};
 
 Lib.dt.DateTool = DateTool;
