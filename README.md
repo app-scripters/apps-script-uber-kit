@@ -1,19 +1,28 @@
 # apps-script-uber-kit
-Complex modular library and build tool kit for Google (R) Apps Script (TM)
+Complex modular development kit and build tool for Google (R) Apps Script (TM)
 all kind of scripts
 
-**WARNING: while completely usable, 
-project is in Alpha stage at the moment and is seen rapid potentially incompatible changes.
-Watch this notice removal.**
+
+##Modules
+- True Web App Framework for Web Published scripts:
+  - rendering engine
+  - HTML and API server modes (e.g. for separate widgets)
+  - url router
+  - HTML pages from temlplates with context
+- Powerfull configurator tool to read various types of parameters from sheets
+- OAuth1 module with QuickBooks support in particular
+- Sheets-as-Database tools
+- Date-time tools with javascript fixes fro Apps Script environment, Timezone-aware
+- Side Bar goodies for google docs
+- Dynamic templates
+- Namespaces and other utilities
 
 ##Features
-- Framework for Web published scripts
-- automatic concatenation in proper order into a single file
+- Automatic concatenation in proper order into a single file
 - recognizes app project structure with configuration folder, see below
 - Builds modular library and external dependencies (vendor-src) for particular app according to 'config.js'
 - places build into corresponding app folder /build subfolder
-
-- Unix environment only is supported for now
+- Build is supported on Unix environment only at the moment
 
 ## Important notes
 
