@@ -1,6 +1,6 @@
 # apps-script-uber-kit
 Complex modular development kit and build tool for Google (R) Apps Script (TM)
-all kind of scripts
+projects
 
 
 ##Modules
@@ -63,22 +63,19 @@ to this repository root
 
 ### To build an example app (from this repository)
 
-- Go to example-apps folder
-- run: 
-
-```
+```sh
+    cd example-apps
     build.sh appname
 ```
 
 ### To build your app (from this repository)
 
-- Make a copy of example-apps folder (named e.g. working-root) with at least one app inside and build.sh script
-- name your app(s) (e.g. yourapp)
-- Modify code in working-root/yourapp/app section
-- adjust working-root/yourapp/config.js to the modules you want
-- run this inside the new working-root:
+- Make a copy of example-apps folder (e.g. "my-apps") with at least one app inside (e.g. "yourapp") and build.sh script
+- Modify code in my-apps/yourapp/app section
+- adjust my-apps/yourapp/config.js to the modules you want
 
-```
+```sh
+    cd my-apps
     build.sh yourapp
 ```
 
