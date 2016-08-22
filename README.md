@@ -1,5 +1,5 @@
 # apps-script-uber-kit
-Complex modular development kit and build tool for Google (R) Apps Script (TM)
+Complex modular development kit and build tool for Google ® Apps Script ™
 projects
 
 
