@@ -1,19 +1,28 @@
 # apps-script-uber-kit
-Complex modular library and build tool kit for Google (R) Apps Script (TM)
-all kind of scripts
+Complex modular development kit and build tool for Google ® Apps Script ™
+projects
 
-**WARNING: while completely usable, 
-project is in Alpha stage at the moment and is seen rapid potentially incompatible changes.
-Watch this notice removal.**
+
+##Modules
+- True Web App Framework for Web Published scripts:
+  - rendering engine
+  - HTML and API server modes (e.g. for separate widgets)
+  - url router
+  - HTML pages from temlplates with context
+- Powerfull configurator tool to read various types of parameters from sheets
+- OAuth1 module with QuickBooks support in particular
+- Sheets-as-Database tools
+- Date-time tools with javascript fixes fro Apps Script environment, Timezone-aware
+- Side Bar goodies for google docs
+- Dynamic templates
+- Namespaces and other utilities
 
 ##Features
-- Framework for Web published scripts
-- automatic concatenation in proper order into a single file
+- Automatic concatenation in proper order into a single file
 - recognizes app project structure with configuration folder, see below
 - Builds modular library and external dependencies (vendor-src) for particular app according to 'config.js'
 - places build into corresponding app folder /build subfolder
-
-- Unix environment only is supported for now
+- Build is supported on Unix environment only at the moment
 
 ## Important notes
 
@@ -54,22 +63,19 @@ to this repository root
 
 ### To build an example app (from this repository)
 
-- Go to example-apps folder
-- run: 
-
-```
+```sh
+    cd example-apps
     build.sh appname
 ```
 
 ### To build your app (from this repository)
 
-- Make a copy of example-apps folder (named e.g. working-root) with at least one app inside and build.sh script
-- name your app(s) (e.g. yourapp)
-- Modify code in working-root/yourapp/app section
-- adjust working-root/yourapp/config.js to the modules you want
-- run this inside the new working-root:
+- Make a copy of example-apps folder (e.g. "my-apps") with at least one app inside (e.g. "yourapp") and build.sh script
+- Modify code in my-apps/yourapp/app section
+- adjust my-apps/yourapp/config.js to the modules you want
 
-```
+```sh
+    cd my-apps
     build.sh yourapp
 ```
 
