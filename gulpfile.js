@@ -1,4 +1,5 @@
 var gulp = require('gulp');
+var path = require("path");
 var concat = require('gulp-concat');
 var jshint = require('gulp-jshint');
 var cached = require('gulp-cached');
@@ -43,7 +44,7 @@ if (options.app) {
     appPath = exampleAppSrcBase + '/' + defaultExampleApp;
 }
 
-var mods = require(appPath + '/config').modules;
+var mods = require(path.join(appPath + 'config')).modules;
 
 var vendorFiles = constructSources(mods.vendor, [srcVendor]);
 var libFiles = constructSources(mods.library, [srcLib]);
